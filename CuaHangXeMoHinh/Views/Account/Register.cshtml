@@ -1,0 +1,227 @@
+﻿@model CuaHangXeMoHinh.ViewModels.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Đăng Ký Tài Khoản";
+}
+
+<div class="container mx-auto px-4 py-20 min-h-[80vh] flex items-center justify-center">
+    <div class="w-full max-w-2xl">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-8 shadow-2xl relative overflow-hidden">
+             <!-- Decorative Glow -->
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent"></div>
+
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-zinc-950 rounded-full flex items-center justify-center mx-auto mb-4 border border-zinc-800">
+                    <i class="bi bi-person-plus text-3xl text-primary"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-white font-display mb-2">ĐĂNG KÝ THÀNH VIÊN</h2>
+                <p class="text-zinc-500 text-sm">Gia nhập câu lạc bộ những người đam mê tốc độ</p>
+            </div>
+
+            <form method="post" asp-action="Register" asp-controller="Account">
+                <div asp-validation-summary="ModelOnly" class="bg-red-500/10 border border-red-500 text-red-500 text-sm p-4 rounded mb-6" role="alert"></div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                         <!-- Name -->
+                        <div>
+                            <label asp-for="FullName" class="block text-zinc-400 text-xs uppercase font-bold mb-2">Họ và tên *</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"><i class="bi bi-person"></i></span>
+                                <input asp-for="FullName" type="text" class="w-full bg-zinc-950 border border-zinc-700 text-white pl-10 pr-4 py-3 rounded focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors placeholder:text-zinc-600" placeholder="Nhập họ và tên" required>
+                            </div>
+                            <span asp-validation-for="FullName" class="text-red-500 text-xs mt-1 block"></span>
+                        </div>
+                        
+                        <!-- Date of Birth -->
+                        <div>
+                            <label asp-for="DateOfBirth" class="block text-zinc-400 text-xs uppercase font-bold mb-2">Ngày sinh</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"><i class="bi bi-calendar"></i></span>
+                                <input asp-for="DateOfBirth" type="date" class="w-full bg-zinc-950 border border-zinc-700 text-white pl-10 pr-4 py-3 rounded focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors">
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div>
+                            <label asp-for="Email" class="block text-zinc-400 text-xs uppercase font-bold mb-2">Email *</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"><i class="bi bi-envelope"></i></span>
+                                <input asp-for="Email" type="email" class="w-full bg-zinc-950 border border-zinc-700 text-white pl-10 pr-4 py-3 rounded focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors placeholder:text-zinc-600" placeholder="example@email.com" required>
+                            </div>
+                            <span asp-validation-for="Email" class="text-red-500 text-xs mt-1 block"></span>
+                        </div>
+
+                         <!-- Phone -->
+                        <div>
+                            <label asp-for="PhoneNumber" class="block text-zinc-400 text-xs uppercase font-bold mb-2">Số điện thoại</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"><i class="bi bi-phone"></i></span>
+                                <input asp-for="PhoneNumber" type="tel" class="w-full bg-zinc-950 border border-zinc-700 text-white pl-10 pr-4 py-3 rounded focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors placeholder:text-zinc-600" placeholder="Nhập số điện thoại">
+                            </div>
+                             <span asp-validation-for="PhoneNumber" class="text-red-500 text-xs mt-1 block"></span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <!-- Password -->
+                         <div>
+                            <label asp-for="Password" class="block text-zinc-400 text-xs uppercase font-bold mb-2">Mật khẩu *</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"><i class="bi bi-lock"></i></span>
+                                <input asp-for="Password" type="password" id="password" class="w-full bg-zinc-950 border border-zinc-700 text-white pl-10 pr-10 py-3 rounded focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors placeholder:text-zinc-600" placeholder="Nhập mật khẩu">
+                                <button type="button" id="togglePassword" class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors"><i class="bi bi-eye"></i></button>
+                            </div>
+                            <span asp-validation-for="Password" class="text-red-500 text-xs mt-1 block"></span>
+                            
+                            <!-- Strength Meter -->
+                            <div class="mt-2">
+                                <div class="w-full bg-zinc-800 rounded-full h-1.5 overflow-hidden">
+                                    <div id="passwordStrength" class="bg-red-500 h-full w-0 transition-all duration-300"></div>
+                                </div>
+                                <div class="flex justify-between items-center mt-1">
+                                    <small id="passwordHint" class="text-zinc-500 text-[10px] uppercase tracking-wide">Độ mạnh mật khẩu</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div>
+                            <label asp-for="ConfirmPassword" class="block text-zinc-400 text-xs uppercase font-bold mb-2">Xác nhận mật khẩu *</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"><i class="bi bi-lock-fill"></i></span>
+                                <input asp-for="ConfirmPassword" type="password" id="confirmPassword" class="w-full bg-zinc-950 border border-zinc-700 text-white pl-10 pr-10 py-3 rounded focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors placeholder:text-zinc-600" placeholder="Nhập lại mật khẩu">
+                                <button type="button" id="toggleConfirmPassword" class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors"><i class="bi bi-eye"></i></button>
+                            </div>
+                            <span asp-validation-for="ConfirmPassword" class="text-red-500 text-xs mt-1 block"></span>
+                            <small id="passwordMatchError" class="text-red-500 text-xs mt-1 hidden">Mật khẩu không khớp!</small>
+                        </div>
+
+                        <!-- Terms -->
+                        <div class="pt-4">
+                            <div class="flex items-start">
+                                <input type="checkbox" id="terms" required class="mt-1 w-4 h-4 rounded border-zinc-700 bg-zinc-900 text-primary focus:ring-primary/20">
+                                <label for="terms" class="ml-2 text-sm text-zinc-400">
+                                    Tôi đồng ý với <a href="#" class="text-primary hover:text-red-400 transition-colors">Điều khoản sử dụng</a> và <a href="#" class="text-primary hover:text-red-400 transition-colors">Chính sách bảo mật</a>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <button type="submit" id="submitBtn" class="btn-luxury w-full py-4 flex items-center justify-center gap-2 text-base">
+                        <i class="bi bi-person-plus"></i> ĐĂNG KÝ TÀI KHOẢN
+                    </button>
+                </div>
+
+                <div class="text-center mt-6 text-sm text-zinc-400">
+                    Đã có tài khoản? 
+                    <a asp-action="Login" asp-controller="Account" class="text-primary font-bold hover:underline">Đăng nhập ngay</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Toggle password visibility
+        function togglePassword(inputId, buttonId) {
+            const button = document.getElementById(buttonId);
+            const input = document.getElementById(inputId);
+
+            button.addEventListener('click', function () {
+                const icon = this.querySelector('i');
+
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('bi-eye');
+                    icon.classList.add('bi-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('bi-eye-slash');
+                    icon.classList.add('bi-eye');
+                }
+            });
+        }
+
+        togglePassword('password', 'togglePassword');
+        togglePassword('confirmPassword', 'toggleConfirmPassword');
+
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+        const strengthBar = document.getElementById('passwordStrength');
+        const passwordHint = document.getElementById('passwordHint');
+        const matchError = document.getElementById('passwordMatchError');
+        const submitBtn = document.getElementById('submitBtn');
+
+        passwordInput.addEventListener('input', function () {
+            const password = this.value;
+            let strength = 0;
+
+            if (password.length >= 8) strength += 25;
+            if (/[a-z]/.test(password)) strength += 25;
+            if (/[A-Z]/.test(password)) strength += 25;
+            if (/[0-9]/.test(password)) strength += 15;
+            if (/[^A-Za-z0-9]/.test(password)) strength += 10;
+
+            strengthBar.style.width = Math.min(strength, 100) + '%';
+            
+            // Remove previous classes
+            strengthBar.classList.remove('bg-red-500', 'bg-yellow-500', 'bg-green-500');
+
+            if (strength < 40) {
+                strengthBar.classList.add('bg-red-500');
+                passwordHint.textContent = 'Mật khẩu yếu';
+                passwordHint.className = 'text-red-500 text-[10px] uppercase tracking-wide';
+            } else if (strength < 70) {
+                strengthBar.classList.add('bg-yellow-500');
+                passwordHint.textContent = 'Mật khẩu trung bình';
+                passwordHint.className = 'text-yellow-500 text-[10px] uppercase tracking-wide';
+            } else {
+                strengthBar.classList.add('bg-green-500');
+                passwordHint.textContent = 'Mật khẩu mạnh';
+                 passwordHint.className = 'text-green-500 text-[10px] uppercase tracking-wide';
+            }
+
+            checkPasswordMatch();
+        });
+
+        confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+
+        function checkPasswordMatch() {
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+
+            if (confirmPassword && password !== confirmPassword) {
+                matchError.classList.remove('hidden');
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                matchError.classList.add('hidden');
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function (e) {
+            const terms = document.getElementById('terms');
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+
+            if (!terms.checked) {
+                e.preventDefault();
+                alert('Vui lòng đồng ý với điều khoản sử dụng!');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                alert('Mật khẩu xác nhận không khớp!');
+                return;
+            }
+        });
+    </script>
+}

@@ -1,0 +1,139 @@
+﻿/* product-image-modal.css */
+.image-upload-area {
+    border: 2px dashed #dee2e6;
+    background-color: #f8f9fa;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+    .image-upload-area:hover {
+        border-color: #4361ee;
+        background-color: rgba(67, 97, 238, 0.05);
+    }
+
+    .image-upload-area.dragover {
+        border-color: #4361ee;
+        background-color: rgba(67, 97, 238, 0.1);
+    }
+.image-preview img {
+    transition: transform 0.3s ease;
+}
+
+    .image-preview img:hover {
+        transform: scale(1.02);
+    }
+#productImageModal .modal-dialog {
+    max-width: 800px;
+}
+
+#productImageModal .modal-content {
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+}
+
+#productImageModal .modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px 12px 0 0;
+    border-bottom: none;
+    padding: 1.5rem 1.5rem 0.8rem;
+}
+
+    #productImageModal .modal-header .btn-close {
+        filter: invert(1) brightness(200%);
+    }
+
+#productImageModal .modal-body {
+    padding: 1.5rem;
+}
+
+#productImageModal .card {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+    #productImageModal .card:hover {
+        border-color: #4361ee;
+        box-shadow: 0 4px 12px rgba(67, 97, 238, 0.1);
+    }
+
+#productImageModal .form-control:focus,
+#productImageModal .form-select:focus {
+    border-color: #4361ee;
+    box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+}
+
+#productImageModal .form-check-input:checked {
+    background-color: #4361ee;
+    border-color: #4361ee;
+}
+
+#productImageModal .modal-footer {
+    border-top: 1px solid #e9ecef;
+    padding: 1rem 1.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #productImageModal .modal-body .row {
+        flex-direction: column;
+    }
+
+    #productImageModal .col-md-6 {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+}
+#saveImageBtn .spinner-border {
+    vertical-align: middle;
+    margin-right: 0.5rem;
+}
+
+#imageFile {
+    cursor: pointer;
+}
+
+    #imageFile::-webkit-file-upload-button {
+        background-color: #4361ee;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+        #imageFile::-webkit-file-upload-button:hover {
+            background-color: #3a56d4;
+        }
+
+.image-upload-area {
+    border: 2px dashed #ced4da;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+    .image-upload-area:hover,
+    .image-upload-area.highlight {
+        border-color: #0d6efd;
+        background-color: rgba(13, 110, 253, 0.05);
+    }
+
+.spinner-border {
+    vertical-align: middle;
+}
+
+.image-card {
+    transition: all 0.3s ease;
+}
+
+    .image-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .image-card.border-primary {
+        border-width: 2px !important;
+    }

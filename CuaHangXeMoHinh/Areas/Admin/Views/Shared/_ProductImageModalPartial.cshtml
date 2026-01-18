@@ -1,0 +1,92 @@
+﻿<head>
+    <link rel="stylesheet" href="~/css/product-image-modal.css">
+</head>
+<body>
+<div class="modal fade" id="productImageModal" tabindex="-1" aria-labelledby="productImageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productImageModalLabel">
+                    <i class="bi bi-image me-2"></i>
+                    Thêm ảnh sản phẩm
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="productImageForm" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="image-upload-area rounded border p-4 mb-3">
+                                        <div class="mb-3">
+                                            <i class="bi bi-cloud-upload-fill text-primary" style="font-size: 3rem;"></i>
+                                        </div>
+                                        <h6 class="mb-2">Tải ảnh lên</h6>
+                                        <p class="text-muted small mb-3">Kéo thả hoặc chọn file</p>
+                                        <div class="mb-3">
+                                            <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/*">
+                                        </div>
+                                        <small class="text-muted">Hỗ trợ: JPG, PNG, GIF • Tối đa 5MB</small>
+                                    </div>
+                                    <div class="image-preview mt-3" id="imagePreview" style="display: none;">
+                                        <img id="previewImage" src="#" alt="Preview" class="img-fluid rounded" style="max-height: 200px;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="imageUrl" class="form-label">Hoặc nhập URL ảnh</label>
+                                <input type="url" class="form-control" id="imageUrl" name="imageUrl"
+                                       placeholder="https://example.com/image.jpg">
+                                <div class="form-text">Nhập URL ảnh từ bên ngoài</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="altText" class="form-label">Mô tả ảnh (Alt Text)</label>
+                                <input type="text" class="form-control" id="altText" name="altText"
+                                       placeholder="Mô tả ngắn cho ảnh" maxlength="200">
+                                <div class="form-text">Giúp cải thiện SEO và khả năng truy cập</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="isPrimary" name="isPrimary">
+                                    <label class="form-check-label" for="isPrimary">
+                                        <strong>Đặt làm ảnh chính</strong>
+                                    </label>
+                                </div>
+                                <small class="form-text text-muted">
+                                    Ảnh chính sẽ hiển thị đầu tiên trong gallery sản phẩm
+                                </small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Thứ tự hiển thị</label>
+                                <input type="number" class="form-control" id="displayOrder" name="displayOrder"
+                                       value="0" min="0" max="100">
+                                <div class="form-text">Số càng nhỏ, ảnh càng hiển thị trước</div>
+                            </div>
+
+                            <input type="hidden" id="productId" name="productId" value="">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-lg me-2"></i>
+                        Hủy
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="saveImageBtn">
+                        <i class="bi bi-save me-2"></i>
+                        Lưu ảnh
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>

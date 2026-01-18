@@ -1,0 +1,300 @@
+﻿@model List<CuaHangXeMoHinh.Models.Order>
+@using CuaHangXeMoHinh.Extensions
+@{
+    ViewData["Title"] = "Order History";
+    Layout = "_Layout";
+}
+
+<div class="container mx-auto px-4 py-24 min-h-screen">
+    @Html.AntiForgeryToken()
+    
+    <!-- Header & Filter -->
+    <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-8">
+        <div>
+            <h1 class="text-4xl md:text-5xl font-display font-bold text-white uppercase tracking-tighter mb-2">
+                ORDER <span class="text-stroke-primary text-transparent">HISTORY</span>
+            </h1>
+            <p class="text-zinc-500">Track, manage and view your purchase history.</p>
+        </div>
+
+        <div class="w-full md:w-auto">
+             <div class="relative group">
+                <button class="flex items-center justify-between w-full md:w-64 bg-zinc-900 border border-white/10 text-white px-6 py-3 hover:border-primary transition-colors">
+                    <span class="flex items-center gap-2">
+                        <i class="bi bi-funnel text-primary"></i>
+                        @if (ViewBag.CurrentStatus == null)
+                        {
+                            <span>All Orders</span>
+                        }
+                        else
+                        {
+                            var currentEnum = (OrderStatus)Enum.Parse(typeof(OrderStatus), ViewBag.CurrentStatus.ToString());
+                            <span>@currentEnum.GetDisplayName()</span>
+                        }
+                    </span>
+                    <i class="bi bi-chevron-down text-xs"></i>
+                </button>
+                
+                <!-- Dropdown Menu -->
+                <div class="absolute right-0 top-full mt-2 w-full md:w-64 bg-zinc-900 border border-white/10 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                    <a href="@Url.Action("History", new { status = "" })" class="block px-6 py-3 text-zinc-400 hover:text-white hover:bg-white/5 border-b border-white/5 flex justify-between items-center">
+                        <span>All Orders</span>
+                        <span class="bg-zinc-800 text-xs px-2 py-1 rounded-full">@ViewBag.TotalOrders</span>
+                    </a>
+                    @foreach (OrderStatus status in Enum.GetValues(typeof(OrderStatus)))
+                    {
+                        var statusValue = ((int)status).ToString();
+                        var isActive = (ViewBag.CurrentStatus?.ToString() == statusValue);
+                        <a href="@Url.Action("History", new { status = statusValue })" class="block px-6 py-3 text-zinc-400 hover:text-white hover:bg-white/5 @(isActive ? "text-primary" : "")">
+                            @status.GetDisplayName()
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content -->
+    @if (!Model.Any())
+    {
+        <div class="bg-zinc-900/50 border border-white/10 p-12 backdrop-blur-md text-center">
+            <div class="w-24 h-24 mx-auto bg-zinc-800 rounded-full flex items-center justify-center mb-6">
+                 <i class="bi bi-cart-x text-4xl text-zinc-600"></i>
+            </div>
+            <h3 class="text-2xl font-display font-bold text-white mb-2">NO ORDERS FOUND</h3>
+            <p class="text-zinc-500 mb-8">You haven't placed any orders yet. Start your collection today.</p>
+            <a asp-controller="Products" asp-action="Index" class="inline-flex items-center gap-2 bg-primary text-black px-8 py-3 font-bold hover:bg-white transition-colors">
+                <i class="bi bi-cart-plus"></i> SHOP NOW
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="bg-zinc-900/50 border border-white/10 backdrop-blur-md overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-zinc-900/80 text-xs uppercase tracking-widest text-zinc-500 border-b border-white/10">
+                            <th class="px-6 py-4">Order ID</th>
+                            <th class="px-6 py-4">Date</th>
+                            <th class="px-6 py-4">Products</th>
+                            <th class="px-6 py-4">Total</th>
+                            <th class="px-6 py-4">Status</th>
+                            <th class="px-6 py-4 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5">
+                        @foreach (var order in Model)
+                        {
+                            <tr class="group hover:bg-white/5 transition-colors">
+                                <td class="px-6 py-4">
+                                    <span class="font-mono text-primary font-bold">#@order.Id.ToString("D6")</span>
+                                </td>
+                                <td class="px-6 py-4 text-zinc-400 text-sm">
+                                    @order.CreatedAt.ToString("dd/MM/yyyy") <span class="text-zinc-600 ml-1">@order.CreatedAt.ToString("HH:mm")</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    @if (order.Items.Any())
+                                    {
+                                        var firstItem = order.Items.First();
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-12 h-12 bg-zinc-800 border border-white/10 overflow-hidden relative shrink-0">
+                                                <img src="@(firstItem.Product?.Images?.FirstOrDefault()?.Url ?? "https://placehold.co/60")"
+                                                     alt="@firstItem.Product?.Name"
+                                                     class="w-full h-full object-cover">
+                                            </div>
+                                            <div class="min-w-0">
+                                                <p class="text-white font-bold text-sm truncate max-w-[200px]">@firstItem.Product?.Name</p>
+                                                @if (order.Items.Count > 1)
+                                                {
+                                                    <p class="text-zinc-500 text-xs">+ @(order.Items.Count - 1) other items</p>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                </td>
+                                <td class="px-6 py-4 text-white font-mono font-bold">
+                                    @order.TotalAmount.ToString("N0") đ
+                                </td>
+                                <td class="px-6 py-4">
+                                    @{
+                                        var statusClass = order.Status.ToString() switch {
+                                            "Pending" => "bg-yellow-500/10 text-yellow-500 border-yellow-500/20",
+                                            "Completed" => "bg-green-500/10 text-green-500 border-green-500/20",
+                                            "Cancelled" => "bg-red-500/10 text-red-500 border-red-500/20",
+                                            "Shipping" => "bg-blue-500/10 text-blue-500 border-blue-500/20",
+                                            _ => "bg-zinc-700/50 text-zinc-300 border-zinc-600"
+                                        };
+                                    }
+                                    <span class="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-sm border @statusClass">
+                                        @order.Status.GetDisplayName()
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <div class="flex items-center justify-end gap-2">
+                                        <a asp-action="Details" asp-route-id="@order.Id"
+                                           class="text-zinc-400 hover:text-white transition-colors" title="View Details">
+                                            <i class="bi bi-eye text-lg"></i>
+                                        </a>
+
+                                        @if (order.Status == OrderStatus.Pending)
+                                        {
+                                            <button type="button"
+                                                    class="text-red-500 hover:text-red-400 transition-colors cancel-order-btn"
+                                                    data-order-id="@order.Id"
+                                                    title="Cancel Order">
+                                                <i class="bi bi-x-circle text-lg"></i>
+                                            </button>
+                                        }
+                                        
+                                        @if (order.Status == OrderStatus.ReturnDenied)
+                                        {
+                                            <a href="#" class="text-zinc-400 hover:text-white transition-colors" title="Contact Support">
+                                                <i class="bi bi-headset text-lg"></i>
+                                            </a>
+                                        }
+                                    </div>
+                                    
+                                     @if (order.Status == OrderStatus.ReturnRequested)
+                                    {
+                                        <div class="text-xs text-yellow-500 mt-1">Return Requested</div>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            @if (ViewBag.TotalPages > 1)
+            {
+                <div class="flex justify-center py-8 border-t border-white/10">
+                    <div class="flex gap-2">
+                        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                        {
+                            <a href="@Url.Action("History", new { status = ViewBag.CurrentStatus, page = i })"
+                               class="w-10 h-10 flex items-center justify-center border @(i == ViewBag.CurrentPage ? "bg-primary text-black border-primary font-bold" : "bg-zinc-900 border-white/10 text-zinc-400 hover:bg-white/10 hover:text-white") transition-colors">
+                                @i
+                            </a>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<!-- Custom Tailwind Modal -->
+<div id="cancelOrderModal" class="fixed inset-0 z-[100] hidden" aria-hidden="true">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity opacity-0 modal-backdrop"></div>
+    
+    <!-- Modal Content -->
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-zinc-900 border border-white/10 p-8 w-full max-w-md relative z-10 transform scale-95 opacity-0 transition-all modal-content shadow-2xl">
+            <h3 class="text-2xl font-display font-bold text-white mb-4">CANCEL ORDER?</h3>
+            <p class="text-zinc-400 mb-8">Are you sure you want to cancel this order? This action cannot be undone.</p>
+            
+            <div class="flex gap-4">
+                <button type="button" class="flex-1 px-6 py-3 border border-white/10 text-white hover:bg-white/5 transition-colors" id="closeModalBtn">
+                    KEEP ORDER
+                </button>
+                <button type="button" class="flex-1 px-6 py-3 bg-red-600 text-white hover:bg-red-700 transition-colors font-bold" id="confirmCancelBtn">
+                    YES, CANCEL
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let currentOrderId = null;
+            const modal = document.getElementById('cancelOrderModal');
+            const backdrop = modal.querySelector('.modal-backdrop');
+            const content = modal.querySelector('.modal-content');
+            
+            // Modal Functions
+            function showModal() {
+                modal.classList.remove('hidden');
+                // Trigger reflow
+                void modal.offsetWidth;
+                backdrop.classList.remove('opacity-0');
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }
+
+            function hideModal() {
+                backdrop.classList.add('opacity-0');
+                content.classList.remove('scale-100', 'opacity-100');
+                content.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300); // Match transition duration
+                currentOrderId = null;
+            }
+
+            // Event Listeners
+            document.querySelectorAll('.cancel-order-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    currentOrderId = this.dataset.orderId;
+                    showModal();
+                });
+            });
+
+            document.getElementById('closeModalBtn').addEventListener('click', hideModal);
+            backdrop.addEventListener('click', hideModal);
+
+            // AJAX Cancel Logic
+            document.getElementById('confirmCancelBtn').addEventListener('click', function() {
+                if (!currentOrderId) return;
+                
+                const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                $.ajax({
+                    url: '@Url.Action("CancelOrder", "Order")',
+                    type: 'POST',
+                    data: { orderId: currentOrderId }, // Pass orderId properly
+                    headers: { 'RequestVerificationToken': token },
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'CANCELLED',
+                                text: 'Your order has been cancelled successfully.',
+                                background: '#18181b', // Zinc-900
+                                color: '#ffffff',
+                                confirmButtonColor: '#eab308' // Yellow-500
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'ERROR',
+                                text: response.message || 'Something went wrong.',
+                                background: '#18181b',
+                                color: '#ffffff',
+                                confirmButtonColor: '#ef4444'
+                            });
+                        }
+                        hideModal();
+                    },
+                    error: function() {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'ERROR',
+                            text: 'Connection failed.',
+                             background: '#18181b',
+                                color: '#ffffff',
+                            confirmButtonColor: '#ef4444'
+                        });
+                        hideModal();
+                    }
+                });
+            });
+        });
+    </script>
+}

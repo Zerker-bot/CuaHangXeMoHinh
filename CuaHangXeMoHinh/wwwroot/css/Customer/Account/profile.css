@@ -1,0 +1,66 @@
+﻿/* Account Page Styles */
+.list-group-item.active {
+    background-color: rgba(42, 108, 255, 0.1);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+.tab-content {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Card hover effects */
+.card {
+    transition: var(--transition);
+    border: 1px solid var(--light-gray);
+}
+
+    .card:hover {
+        box-shadow: var(--box-shadow);
+        transform: translateY(-2px);
+    }
+
+/* Order status badges */
+.badge {
+    font-weight: 500;
+    padding: 0.4em 0.8em;
+}
+
+/* Address cards */
+.card.border-primary {
+    border-width: 2px;
+}
+
+/* Form styles */
+.form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(42, 108, 255, 0.25);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container.py-5 {
+        padding-top: 2rem !important;
+        padding-bottom: 2rem !important;
+    }
+
+    .card {
+        margin-bottom: 1rem;
+    }
+}

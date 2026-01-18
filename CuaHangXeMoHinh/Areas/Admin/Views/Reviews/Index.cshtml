@@ -1,0 +1,374 @@
+﻿@model IEnumerable<Review>
+
+@{
+    ViewData["Title"] = "Quản lý Đánh giá";
+    ViewData["ActiveMenu"] = "reviews";
+    var currentStatus = ViewBag.CurrentStatus as string;
+    var pendingCount = ViewBag.PendingCount ?? 0;
+    var approvedCount = ViewBag.ApprovedCount ?? 0;
+    var rejectedCount = ViewBag.RejectedCount ?? 0;
+}
+
+<div class="container-fluid">
+    <div class="header mb-4">
+        <h1 class="header-title">
+            <i class="bi bi-chat-dots me-2"></i>
+            @ViewData["Title"]
+        </h1>
+        <p class="text-muted mb-0">Duyệt và quản lý đánh giá từ khách hàng</p>
+    </div>
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i>
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="dashboard-card">
+                <div class="d-flex align-items-center">
+                    <div class="card-icon warning me-3">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Chờ duyệt</div>
+                        <div class="card-value">@pendingCount</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="dashboard-card">
+                <div class="d-flex align-items-center">
+                    <div class="card-icon success me-3">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Đã duyệt</div>
+                        <div class="card-value">@approvedCount</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="dashboard-card">
+                <div class="d-flex align-items-center">
+                    <div class="card-icon danger me-3">
+                        <i class="bi bi-x-circle"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Đã từ chối</div>
+                        <div class="card-value">@rejectedCount</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white border-bottom">
+            <ul class="nav nav-tabs card-header-tabs">
+                <li class="nav-item">
+                    <a class="nav-link @(currentStatus == "pending" ? "active" : "")"
+                       asp-action="Index" asp-route-status="pending">
+                        <i class="bi bi-clock-history me-1"></i>
+                        Chờ duyệt
+                        @if (pendingCount > 0)
+                        {
+                            <span class="badge bg-warning ms-2">@pendingCount</span>
+                        }
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(currentStatus == "approved" ? "active" : "")"
+                       asp-action="Index" asp-route-status="approved">
+                        <i class="bi bi-check-circle me-1"></i>
+                        Đã duyệt
+                       
+                            <span class="badge bg-success ms-2">@approvedCount</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(currentStatus == "rejected" ? "active" : "")"
+                       asp-action="Index" asp-route-status="rejected">
+                        <i class="bi bi-x-circle me-1"></i>
+                        Đã từ chối
+                        @if (rejectedCount > 0)
+                        {
+                            <span class="badge bg-danger ms-2">@rejectedCount</span>
+                        }
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="card-body p-0">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="w-5">ID</th>
+                                <th class="w-20">Sản phẩm</th>
+                                <th class="w-15">Người đánh giá</th>
+                                <th class="w-10">Điểm</th>
+                                <th class="w-30">Nội dung</th>
+                                <th class="w-10">Ngày tạo</th>
+                                <th class="w-10 text-center">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var review in Model)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">#@review.Id</td>
+                                    <td>
+                                        @if (review.Product != null)
+                                        {
+                                            <div class="d-flex align-items-center">
+                                                <div class="me-2">
+                                                    <i class="bi bi-box text-primary"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="fw-medium">@review.Product.Name</div>
+                                                    <small class="text-muted">ID: @review.ProductId</small>
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Đã xóa</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (review.User != null)
+                                        {
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar me-2">
+                                                    <div class="avatar-placeholder avatar-index bg-primary text-white rounded-circle d-flex align-items-center justify-content-center">
+                                                        @review.User.FullName?[0]
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <div class="fw-medium">@review.User.FullName</div>
+                                                    <small class="text-muted">@review.User.Email</small>
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Ẩn danh</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="star-rating">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                <i class="bi @(i <= review.Rating ? "bi-star-fill" : "bi-star")"></i>
+                                            }
+                                            <span class="ms-1 fw-medium">@review.Rating/5</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="truncate-text" style="max-width: 300px;">
+                                            @if (!string.IsNullOrEmpty(review.Content))
+                                            {
+                                                @review.Content
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Không có nội dung</span>
+                                            }
+                                        </div>
+                                        @if (!string.IsNullOrEmpty(review.Response))
+                                        {
+                                            <div class="mt-1">
+                                                <small class="text-success fw-medium">
+                                                    <i class="bi bi-reply me-1"></i>
+                                                    Phản hồi: @review.Response
+                                                </small>
+                                            </div>
+                                        }
+                                    </td>
+                                    <td>
+                                        <small>@review.CreatedAt.ToString("dd/MM/yyyy")</small>
+                                        <br>
+                                        <small class="text-muted">@review.CreatedAt.ToString("HH:mm")</small>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group" role="group">
+                                            @if (currentStatus == "pending")
+                                            {
+                                                <button type="button"
+                                                        class="btn btn-outline-success px-3"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#approveModal_@review.Id"
+                                                        title="Duyệt đánh giá">
+                                                    <i class="bi bi-check-lg"></i>
+                                                </button>
+
+                                                <button type="button"
+                                                        class="btn btn-outline-danger px-3"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#rejectModal_@review.Id"
+                                                        title="Từ chối đánh giá">
+                                                    <i class="bi bi-x-lg"></i>
+                                                </button>
+                                            }
+
+                                            <a asp-action="Details" asp-route-id="@review.Id"
+                                               class="btn btn-outline-secondary px-3"
+                                               title="Chi tiết">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            @if (User.IsInRole("Admin"))
+                                                {
+                                            <form asp-action="Delete" asp-route-id="@review.Id"
+                                                  method="post" class="d-inline js-delete-form"
+                                                  data-item-name="đánh giá #@review.Id"
+                                                  data-item-type="đánh giá">
+                                                
+                                                @Html.AntiForgeryToken()
+                                                <button class="btn btn-outline-danger px-3"
+                                                        type="submit" title="Xóa đánh giá">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <div class="modal fade" id="approveModal_@review.Id" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <form asp-action="Approve" method="post">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@review.Id" />
+
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">
+                                                        <i class="bi bi-check-circle text-success me-2"></i>
+                                                        Duyệt đánh giá
+                                                    </h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <p>Bạn có chắc muốn duyệt đánh giá #@review.Id?</p>
+                                                        <div class="alert alert-info">
+                                                            <strong>Nội dung:</strong><br />
+                                                            @review.Content
+                                                        </div>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="response_@review.Id" class="form-label">
+                                                            <i class="bi bi-reply me-1"></i>
+                                                            Phản hồi (tùy chọn)
+                                                        </label>
+                                                        <textarea name="response"
+                                                                  id="response_@review.Id"
+                                                                  class="form-control"
+                                                                  rows="3"
+                                                                  placeholder="Nhập phản hồi cho đánh giá này..."></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                        <i class="bi bi-x-lg me-1"></i>
+                                                        Hủy
+                                                    </button>
+                                                    <button type="submit" class="btn btn-success">
+                                                        <i class="bi bi-check-lg me-1"></i>
+                                                        Duyệt đánh giá
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal fade" id="rejectModal_@review.Id" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <form asp-action="Reject" method="post">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@review.Id" />
+
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">
+                                                        <i class="bi bi-x-circle text-danger me-2"></i>
+                                                        Từ chối đánh giá
+                                                    </h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <p>Bạn có chắc muốn từ chối đánh giá #@review.Id?</p>
+                                                        <div class="alert alert-warning">
+                                                            <strong>Nội dung:</strong><br />
+                                                            @review.Content
+                                                        </div>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="rejectResponse_@review.Id" class="form-label">
+                                                            <i class="bi bi-reply me-1"></i>
+                                                            Lý do từ chối
+                                                        </label>
+                                                        <textarea name="response"
+                                                                  id="rejectResponse_@review.Id"
+                                                                  class="form-control"
+                                                                  rows="3"
+                                                                  placeholder="Nhập lý do từ chối đánh giá này..."></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                        <i class="bi bi-x-lg me-1"></i>
+                                                        Hủy
+                                                    </button>
+                                                    <button type="submit" class="btn btn-danger">
+                                                        <i class="bi bi-x-lg me-1"></i>
+                                                        Từ chối đánh giá
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <div class="mb-3">
+                        <i class="bi bi-chat-dots text-muted" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5 class="text-muted">Không có đánh giá nào</h5>
+                    <p class="text-muted mb-4">Không có đánh giá @(currentStatus == "pending" ? "chờ duyệt" : currentStatus == "approved" ? "đã duyệt" : "đã từ chối")</p>
+                </div>
+            }
+        </div>
+
+        <div class="card-footer bg-white border-top">
+            <div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted">Hiển thị @Model.Count() đánh giá</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>  
+      
+
+       
+    </script>
+}

@@ -1,0 +1,77 @@
+﻿@model Brand
+
+@{
+    ViewData["Title"] = "Chỉnh sửa thương hiệu";
+    ViewData["ActiveMenu"] = "brands";
+}
+
+<div class="container-fluid">
+    <div class="header mb-4">
+        <h1 class="header-title">
+            <i class="bi bi-pencil-square me-2"></i>
+            @ViewData["Title"]
+        </h1>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-award me-2"></i>
+                        Chỉnh sửa thông tin
+                    </h5>
+                    <div class="card-tools">
+                        <span class="badge bg-info">ID: @Model.Id</span>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label"></label>
+                            <input asp-for="Name" class="form-control"
+                                   placeholder="Nhập tên thương hiệu" />
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Description" class="form-label"></label>
+                            <textarea asp-for="Description" class="form-control"
+                                      rows="4"
+                                      placeholder="Nhập mô tả thương hiệu"></textarea>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                            <div class="form-text">Tối đa 250 ký tự</div>
+                        </div>
+
+                        <div class="pt-3 border-top">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save me-2"></i>
+                                Lưu thay đổi
+                            </button>
+                            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary ms-2">
+                                <i class="bi bi-eye me-2"></i>
+                                Xem chi tiết
+                            </a>
+                            <a asp-action="Index" class="btn btn-outline-secondary ms-2">
+                                <i class="bi bi-arrow-left me-2"></i>
+                                Quay lại
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

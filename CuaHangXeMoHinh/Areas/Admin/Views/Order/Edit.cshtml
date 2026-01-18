@@ -1,0 +1,209 @@
+﻿@using CuaHangXeMoHinh.Areas.Admin.Models.ViewModels
+@using CuaHangXeMoHinh.Extensions
+@model OrderEditViewModel
+
+@{
+    ViewData["Title"] = "Chỉnh sửa đơn hàng";
+    ViewData["ActiveMenu"] = "order-management";
+    var order = ViewBag.Order as Order;
+}
+
+<div class="container-fluid">
+    <div class="header mb-4">
+        <h1 class="header-title">
+            <i class="bi bi-pencil me-2"></i>
+            @ViewData["Title"] #@Model.Id
+        </h1>
+        <p class="text-muted mb-0">Cập nhật thông tin đơn hàng</p>
+    </div>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">   
+            <h5>  <i class="bi bi-exclamation-triangle me-2">
+            </i>Vui lòng kiểm tra lại thông tin!</h5>
+            <div asp-validation-summary="All" class="mt-2"></div>
+
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-gear me-2"></i>
+                        Thông tin đơn hàng
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Khách hàng</label>
+                                    <input type="text" class="form-control" value="@Model.UserFullName" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Ngày đặt</label>
+                                    <input type="text" class="form-control" value="@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Tổng tiền</label>
+                                    <input type="text" class="form-control" value="@Model.TotalAmount.ToString("N0") ₫" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Trạng thái hiện tại</label>
+                                    @{
+                                        var currentBadgeClass = Model.CurrentStatus.GetBadgeClass();
+                                    }
+                                    <div>
+                                        <span class="badge @currentBadgeClass">@Model.CurrentStatus.GetDisplayName()</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Status" class="form-label">Trạng thái mới *</label>
+                                    <select asp-for="Status" class="form-select" required>
+                                        @foreach (OrderStatus status in Enum.GetValues(typeof(OrderStatus)))
+                                        {
+                                            <option value="@status">@status.GetDisplayName()</option>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="Status" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="ShippingFee" class="form-label">Phí vận chuyển (₫)</label>
+                                    <input asp-for="ShippingFee" class="form-control" type="number" min="0" step="1000">
+                                    <span asp-validation-for="ShippingFee" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Discount" class="form-label">Giảm giá (₫)</label>
+                                    <input asp-for="Discount" class="form-control" type="number" min="0" step="1000">
+                                    <span asp-validation-for="Discount" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Note" class="form-label">Ghi chú</label>
+                            <textarea asp-for="Note" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Note" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                            <div>
+                                <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
+                                    <i class="bi bi-arrow-left me-2"></i>
+                                    Quay lại
+                                </a>
+                            </div>
+                            <div>
+                                <a asp-action="Index" class="btn btn-secondary me-2">
+                                    <i class="bi bi-x-circle me-2"></i>
+                                    Hủy
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save me-2"></i>
+                                    Lưu thay đổi
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Thông tin hướng dẫn
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <strong>Quy trình xử lý đơn hàng:</strong>
+                        <ul class="mt-2 mb-0 ps-3">
+                            <li><strong>Chờ xử lý</strong>: Đơn hàng mới tạo</li>
+                            <li><strong>Đang xử lý</strong>: Đã xác nhận và chuẩn bị hàng</li>
+                            <li><strong>Đang vận chuyển</strong>: Đã giao cho đơn vị vận chuyển</li>
+                            <li><strong>Giao thành công</strong>: Khách đã nhận hàng</li>
+                            <li><strong>Yêu cầu trả</strong>: Khách yêu cầu trả hàng</li>
+                            <li><strong>Đã trả hàng</strong>: Đã hoàn trả thành công</li>
+                            <li><strong>Từ chối trả</strong>: Không chấp nhận trả hàng</li>
+                            <li><strong>Đã hủy</strong>: Đơn hàng bị hủy</li>
+                        </ul>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        <strong>Lưu ý quan trọng:</strong>
+                        <ul class="mt-2 mb-0 ps-3">
+                            <li>Không thể chuyển từ trạng thái đã hủy sang hoạt động</li>
+                            <li>Đơn hàng đã giao thành công có thể được yêu cầu trả</li>
+                            <li>Chỉ Admin/Manager mới có quyền hủy đơn hàng</li>
+                            <li>Mọi thay đổi sẽ được ghi log hệ thống</li>
+                        </ul>
+                    </div>
+
+                    @if (order?.Items != null)
+                    {
+                        <div class="mt-3">
+                            <h6 class="mb-3">Sản phẩm trong đơn:</h6>
+                            <ul class="list-group list-group-flush">
+                                @foreach (var item in order.Items.Take(3))
+                                {
+                                    <li class="list-group-item px-0">
+                                        <div class="d-flex justify-content-between">
+                                            <span>@item.Product?.Name</span>
+                                            <span class="text-muted">x@(item.Quantity)</span>
+                                        </div>
+                                    </li>
+                                }
+                                @if (order.Items.Count > 3)
+                                {
+                                    <li class="list-group-item px-0 text-center">
+                                        <small class="text-muted">...và @(order.Items.Count - 3) sản phẩm khác</small>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,82 @@
+﻿@using CuaHangXeMoHinh.Extensions
+@model List<OrderStatusLog>
+
+@{
+    ViewData["Title"] = "Lịch sử trạng thái đơn hàng";
+    ViewData["ActiveMenu"] = "order-management";
+    var orderId = ViewBag.OrderId ?? 0;
+}
+
+<div class="container-fluid">
+    <div class="header mb-4">
+        <h1 class="header-title">
+            <i class="bi bi-clock-history me-2"></i>
+            @ViewData["Title"]
+        </h1>
+        <p class="text-muted mb-0">Theo dõi lịch sử thay đổi trạng thái đơn hàng</p>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white border-bottom">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-list-ul me-2"></i>
+                    Lịch sử đơn hàng #@orderId
+                </h5>   
+                <div>
+                    <a asp-action="Details" asp-route-id="@orderId" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-arrow-left me-1"></i>
+                        Quay lại
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="w-20">Thời gian</th>
+                                <th class="w-20">Người thay đổi</th>
+                                <th class="w-20">Trạng thái cũ</th>
+                                <th class="w-20">Trạng thái mới</th>
+                                <th class="w-20">Ghi chú</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var log in Model)
+                            {
+                                <tr>
+                                    <td>@log.ChangedAt.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                                    <td>@log.ChangedBy</td>
+                                    <td>
+                                        @{
+                                            var oldBadgeClass = log.OldStatus.GetBadgeClass();
+                                        }
+                                        <span class="badge @oldBadgeClass">@log.OldStatus.GetDisplayName()</span>
+                                    </td>
+                                    <td>
+                                        @{
+                                            var newBadgeClass = log.NewStatus.GetBadgeClass();
+                                        }
+                                        <span class="badge @newBadgeClass">@log.NewStatus.GetDisplayName()</span>
+                                    </td>
+                                    <td>@log.Note</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-clock-history text-muted" style="font-size: 3rem;"></i>
+                    <p class="text-muted mt-3">Chưa có lịch sử thay đổi trạng thái</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>

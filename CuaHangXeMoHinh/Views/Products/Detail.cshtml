@@ -1,0 +1,318 @@
+﻿@using CuaHangXeMoHinh.Models
+@model Product
+@{
+    ViewData["Title"] = Model.Name;
+    var mainImage = Model.Images.FirstOrDefault(i => i.IsPrimary)?.Url
+                    ?? Model.Images.FirstOrDefault()?.Url
+                    ?? "https://placehold.co/600x400";
+
+    var approvedReviews = Model.Reviews.Where(r => r.IsApproved).ToList();
+    double avgRating = approvedReviews.Any() ? Model.Reviews.Average(r => r.Rating) : 0;
+    int reviewCount = approvedReviews.Count;
+
+    int discount = 0;
+    if (Model.Cost > Model.Price)
+    {
+        discount = (int)Math.Round(((Model.Cost - Model.Price) / Model.Cost) * 100);
+    }
+}
+
+<main id="main-content" class="bg-background min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Breadcrumb -->
+        <nav class="mb-8 text-sm">
+            <ol class="flex items-center gap-2 text-zinc-500">
+                <li><a class="hover:text-primary transition-colors" asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+                <li><i class="bi bi-chevron-right text-xs"></i></li>
+                <li><a class="hover:text-primary transition-colors" asp-controller="Products" asp-action="Index">Sản phẩm</a></li>
+                <li><i class="bi bi-chevron-right text-xs"></i></li>
+                <li>
+                    <a class="hover:text-primary transition-colors" asp-controller="Products" asp-action="Index" asp-route-categoryId="@Model.Category?.Id">
+                        @Model.Category?.Name
+                    </a>
+                </li>
+                <li><i class="bi bi-chevron-right text-xs"></i></li>
+                <li class="text-white font-medium truncat">@Model.Name</li>
+            </ol>
+        </nav>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="bg-green-500/10 border border-green-500 text-green-400 p-4 mb-6 rounded flex items-center justify-between">
+                <span>@TempData["SuccessMessage"]</span>
+                <button type="button" class="bg-transparent text-green-400 hover:text-white" onclick="this.parentElement.remove()">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="bg-red-500/10 border border-red-500 text-red-400 p-4 mb-6 rounded flex items-center justify-between">
+                <span>@TempData["ErrorMessage"]</span>
+                <button type="button" class="bg-transparent text-red-400 hover:text-white" onclick="this.parentElement.remove()">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+        }
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
+            <!-- Left: Gallery -->
+            <div class="space-y-4">
+                <div class="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden aspect-[4/3] group relative">
+                    <img id="main-image" src="@mainImage" alt="@Model.Name" class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500">
+                    <div class="absolute inset-0 pointer-events-none ring-1 ring-inset ring-white/5 rounded-lg"></div>
+                </div>
+                
+                <div class="flex gap-4 overflow-x-auto pb-2 scrollbar-thin">
+                    @foreach (var img in Model.Images.Take(5))
+                    {
+                        <div class="w-20 h-20 flex-shrink-0 bg-zinc-900 border border-zinc-800 rounded-md overflow-hidden cursor-pointer hover:border-primary transition-colors thumbnail"
+                             onclick="document.getElementById('main-image').src='@img.Url'">
+                            <img src="@img.Url" alt="@Model.Name" class="w-full h-full object-cover">
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Right: Info -->
+            <div class="flex flex-col">
+                <div class="mb-6">
+                    <h2 class="text-primary font-bold tracking-widest uppercase text-sm mb-2">@Model.Brand?.Name</h2>
+                    <h1 class="font-display text-4xl lg:text-5xl font-black text-white leading-tight mb-4">@Model.Name</h1>
+                    
+                    <!-- Ratings -->
+                    <div class="flex items-center gap-2 mb-6 text-yellow-500">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <i class="bi @(i <= avgRating ? "bi-star-fill" : "bi-star-fill text-zinc-800")"></i>
+                        }
+                        <span class="text-zinc-500 text-sm ml-2">(@reviewCount đánh giá)</span>
+                    </div>
+
+                    <!-- Price -->
+                    <div class="flex items-end gap-4 mb-8">
+                         @if (discount > 0)
+                        {
+                            <div>
+                                <span class="block text-zinc-500 text-lg line-through mb-1">@Model.Cost.ToString("N0") ₫</span>
+                                <span class="font-display text-5xl font-bold text-primary">@Model.Price.ToString("N0") ₫</span>
+                            </div>
+                            <span class="bg-primary/20 text-primary text-sm font-bold px-3 py-1 rounded-full mb-3">-@discount%</span>
+                        }
+                        else
+                        {
+                            <span class="font-display text-5xl font-bold text-primary">@Model.Price.ToString("N0") ₫</span>
+                        }
+                    </div>
+
+                    <!-- Short Desc -->
+                     <p class="text-zinc-400 leading-relaxed mb-8 border-l-2 border-primary/50 pl-4">
+                        @Model.Description
+                    </p>
+
+                    <!-- Tech Specs (Mockup based on Category) -->
+                    <div class="grid grid-cols-2 gap-4 mb-8 text-sm">
+                        <div class="bg-zinc-900/50 p-4 border border-zinc-800 rounded">
+                            <span class="block text-zinc-500 mb-1">Danh mục</span>
+                            <span class="text-white font-medium">@Model.Category?.Name</span>
+                        </div>
+                        <div class="bg-zinc-900/50 p-4 border border-zinc-800 rounded">
+                            <span class="block text-zinc-500 mb-1">Tình trạng</span>
+                             @if (Model.Stock > 0)
+                            {
+                                <span class="text-green-500 font-bold">Sẵn hàng (@Model.Stock)</span>
+                            }
+                            else
+                            {
+                                <span class="text-red-500 font-bold">Hết hàng</span>
+                            }
+                        </div>
+                        <div class="bg-zinc-900/50 p-4 border border-zinc-800 rounded">
+                            <span class="block text-zinc-500 mb-1">Bảo hành</span>
+                            <span class="text-white font-medium">12 Tháng Chính Hãng</span>
+                        </div>
+                        <div class="bg-zinc-900/50 p-4 border border-zinc-800 rounded">
+                            <span class="block text-zinc-500 mb-1">Giao hàng</span>
+                            <span class="text-white font-medium">Toàn quốc (2-3 ngày)</span>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="mt-auto pt-8 border-t border-zinc-800">
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <!-- Quantity -->
+                            <div class="flex items-center bg-zinc-900 border border-zinc-700 rounded h-12 w-32">
+                                <button class="w-10 h-full text-zinc-400 hover:text-white flex items-center justify-center quantity-decrease" 
+                                        type="button" data-product-id="@Model.Id">-</button>
+                                <input type="number" class="w-full h-full bg-transparent text-center text-white outline-none quantity-input" 
+                                       value="1" min="1" max="@Model.Stock" id="quantity-input-@Model.Id" 
+                                       data-product-id="@Model.Id">
+                                <button class="w-10 h-full text-zinc-400 hover:text-white flex items-center justify-center quantity-increase" 
+                                        type="button" data-product-id="@Model.Id">+</button>
+                            </div>
+
+                            <!-- Buttons -->
+                            <button class="flex-1 btn-luxury h-12 flex items-center justify-center gap-2 add-to-cart-btn"
+                                    @(Model.Stock <= 0 ? "disabled" : "")
+                                    data-product-id="@Model.Id"
+                                    id="add-to-cart-@Model.Id"
+                                    data-product-name="@Model.Name">
+                                <i class="bi bi-cart-plus text-lg"></i>
+                                <span>THÊM VÀO GIỎ</span>
+                            </button>
+                            
+                            <form asp-controller="Cart" asp-action="BuyNow" method="post" class="flex-none" id="buynow-form-@Model.Id">
+                                <input type="hidden" name="productId" value="@Model.Id" />
+                                <input type="hidden" name="quantity" value="1" id="buynow-quantity-@Model.Id" />
+                                <button type="submit" class="h-12 px-6 border border-primary text-primary hover:bg-primary hover:text-white transition-colors font-bold uppercase tracking-wider h-100 flex items-center justify-center gap-2" @(Model.Stock <= 0 ? "disabled" : "")>
+                                    <i class="bi bi-lightning-fill"></i> MUA NGAY
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Details & Reviews Sections -->
+        <div class="mt-20">
+            <div class="border-b border-zinc-800 mb-8 flex gap-8">
+                <button class="pb-4 border-b-2 border-primary text-white font-bold uppercase tracking-widest text-sm" onclick="showTab('desc')">Mô tả</button>
+                <button class="pb-4 border-b-2 border-transparent text-zinc-500 hover:text-white font-bold uppercase tracking-widest text-sm transition-colors" onclick="showTab('reviews')">Đánh giá (@reviewCount)</button>
+            </div>
+
+            <!-- Description Tab -->
+            <div id="tab-desc" class="max-w-4xl text-zinc-300 leading-relaxed space-y-4">
+                <p>@Model.Description</p>
+                <div class="bg-zinc-900 p-6 rounded-lg border border-zinc-800 mt-8">
+                    <h3 class="text-white font-bold mb-4 flex items-center gap-2"><i class="bi bi-shield-check text-primary"></i> Cam kết chất lượng</h3>
+                    <ul class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                        <li class="flex items-center gap-2"><i class="bi bi-check2 text-green-500"></i> Hàng chính hãng 100%</li>
+                        <li class="flex items-center gap-2"><i class="bi bi-check2 text-green-500"></i> Full box, nguyên seal</li>
+                        <li class="flex items-center gap-2"><i class="bi bi-check2 text-green-500"></i> Chi tiết sắc sảo, sơn tĩnh điện</li>
+                        <li class="flex items-center gap-2"><i class="bi bi-check2 text-green-500"></i> Đổi trả trong 7 ngày</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Reviews Tab -->
+            <div id="tab-reviews" class="hidden max-w-4xl">
+                 @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-lg mb-10">
+                        <h5 class="text-white font-bold mb-4">Viết đánh giá của bạn</h5>
+                        <form asp-controller="Products" asp-action="AddReview" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="productId" value="@Model.Id" />
+                            
+                            <div class="flex items-center gap-2 mb-4">
+                                <label class="text-zinc-400 text-sm">Đánh giá:</label>
+                                <div class="flex flex-row-reverse justify-end items-center gap-1 group/stars">
+                                    <input type="radio" id="star5" name="rating" value="5" class="peer/5 hidden" />
+                                    <label for="star5" class="text-zinc-700 peer-checked/5:text-yellow-500 hover:text-yellow-400 cursor-pointer text-2xl transition-colors"><i class="bi bi-star-fill"></i></label>
+                                    
+                                    <input type="radio" id="star4" name="rating" value="4" class="peer/4 hidden" />
+                                    <label for="star4" class="text-zinc-700 peer-checked/4:text-yellow-500 hover:text-yellow-400 cursor-pointer text-2xl transition-colors"><i class="bi bi-star-fill"></i></label>
+                                    
+                                    <input type="radio" id="star3" name="rating" value="3" class="peer/3 hidden" />
+                                    <label for="star3" class="text-zinc-700 peer-checked/3:text-yellow-500 hover:text-yellow-400 cursor-pointer text-2xl transition-colors"><i class="bi bi-star-fill"></i></label>
+                                    
+                                    <input type="radio" id="star2" name="rating" value="2" class="peer/2 hidden" />
+                                    <label for="star2" class="text-zinc-700 peer-checked/2:text-yellow-500 hover:text-yellow-400 cursor-pointer text-2xl transition-colors"><i class="bi bi-star-fill"></i></label>
+                                    
+                                    <input type="radio" id="star1" name="rating" value="1" class="peer/1 hidden" />
+                                    <label for="star1" class="text-zinc-700 peer-checked/1:text-yellow-500 hover:text-yellow-400 cursor-pointer text-2xl transition-colors"><i class="bi bi-star-fill"></i></label>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <textarea name="content" class="w-full bg-zinc-950 border border-zinc-700 text-white p-3 rounded focus:border-primary outline-none transition-colors" rows="4" placeholder="Chia sẻ trải nghiệm..."></textarea>
+                            </div>
+                            <button type="submit" class="btn-luxury">Gửi Đánh Giá</button>
+                        </form>
+                    </div>
+                }
+                else
+                {
+                    <div class="bg-zinc-900/50 border border-zinc-800 border-dashed p-6 text-center rounded-lg mb-10">
+                        <p class="text-zinc-400 mb-4">Vui lòng đăng nhập để đánh giá sản phẩm</p>
+                        <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="/Products/Detail/@Model.Id" class="text-primary font-bold hover:underline">Đăng nhập ngay</a>
+                    </div>
+                }
+
+                <div class="space-y-6">
+                     @if (approvedReviews.Any())
+                    {
+                        @foreach (var review in approvedReviews)
+                        {
+                            <div class="border-b border-zinc-800 pb-6 last:border-0">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-zinc-800 rounded-full flex items-center justify-center text-primary font-bold">
+                                            @review.User?.FullName?.Substring(0, 1).ToUpper()
+                                        </div>
+                                        <div>
+                                            <h6 class="text-white font-bold text-sm">@review.User?.FullName</h6>
+                                            <div class="flex text-yellow-500 text-xs">
+                                                @for (int i = 1; i <= 5; i++)
+                                                {
+                                                    <i class="bi @(i <= review.Rating ? "bi-star-fill" : "bi-star")"></i>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span class="text-zinc-600 text-xs">@review.CreatedAt.ToString("dd/MM/yyyy")</span>
+                                </div>
+                                <p class="text-zinc-300 text-sm ml-13 pl-13">@review.Content</p>
+                                
+                                @if (!string.IsNullOrEmpty(review.Response))
+                                {
+                                    <div class="mt-3 ml-13 bg-zinc-900 border-l-2 border-primary p-3">
+                                        <p class="text-primary text-xs font-bold mb-1">Phản hồi từ Luxury Models:</p>
+                                        <p class="text-zinc-400 text-sm">@review.Response</p>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-zinc-500 italic text-center">Chưa có đánh giá nào.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        @if (ViewBag.RelatedProducts != null)
+        {
+            <div class="mt-20 border-t border-zinc-800 pt-12">
+                <h3 class="font-display text-2xl font-bold text-white mb-8">SẢN PHẨM <span class="text-primary">LIÊN QUAN</span></h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    @foreach (var product in ViewBag.RelatedProducts)
+                    {
+                         <partial name="_ProductCard" model="product" />
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</main>
+
+@section Scripts {
+    <script>
+        window.productDetail = {
+            productId: @Model.Id,
+            stock: @Model.Stock
+        };
+
+        function showTab(tabName) {
+            document.getElementById('tab-desc').classList.add('hidden');
+            document.getElementById('tab-reviews').classList.add('hidden');
+            
+            // Logic to update active button styling could be added here
+            
+            if(tabName === 'desc') document.getElementById('tab-desc').classList.remove('hidden');
+            if(tabName === 'reviews') document.getElementById('tab-reviews').classList.remove('hidden');
+        }
+    </script>
+}

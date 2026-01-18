@@ -1,0 +1,555 @@
+﻿@model CuaHangXeMoHinh.Areas.Admin.ViewModels.DashboardViewModel
+@using CuaHangXeMoHinh.Extensions
+@{
+    ViewData["Title"] = "Dashboard";
+    ViewData["ActiveMenu"] = "dashboard";
+}
+
+<div class="container-fluid">
+    <div class="header mb-4">
+        <h1 class="header-title">
+            <i class="bi bi-speedometer2 me-2"></i>
+            Dashboard
+        </h1>
+        <p class="text-muted mb-0">Tổng quan hệ thống quản lý cửa hàng</p>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-xl-2 col-md-4 col-sm-6 mb-4">
+            <div class="card dashboard-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title">Sản phẩm</h5>
+                            <h2 class="card-value">@Model.TotalProducts</h2>
+                        </div>
+                        <div class="card-icon primary">
+                            <i class="bi bi-box"></i>
+                        </div>
+                    </div>
+                    <div class="card-change mt-2">
+                        <a asp-area="Admin" asp-controller="Products" asp-action="Index" class="text-decoration-none">
+                            <small>Xem chi tiết <i class="bi bi-arrow-right"></i></small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-md-4 col-sm-6 mb-4">
+            <div class="card dashboard-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title">Đơn hàng</h5>
+                            <h2 class="card-value">@Model.TotalOrders</h2>
+                        </div>
+                        <div class="card-icon success">
+                            <i class="bi bi-cart-check"></i>
+                        </div>
+                    </div>
+                    <div class="card-change mt-2">
+                        <span class="badge bg-warning">@Model.PendingOrders chờ xử lý</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Doanh thu hôm nay -->
+        <div class="col-xl-2 col-md-4 col-sm-6 mb-4">
+            <div class="card dashboard-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title">Doanh thu hôm nay</h5>
+                            <h2 class="card-value">@Model.TodayRevenue.ToString("N0") ₫</h2>
+                        </div>
+                        <div class="card-icon warning">
+                            <i class="bi bi-cash-stack"></i>
+                        </div>
+                    </div>
+                    <div class="card-change increase mt-2">
+                        <i class="bi bi-arrow-up-right me-1"></i>
+                        <small>Tháng: @Model.MonthRevenue.ToString("N0") ₫</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tổng người dùng -->
+        <div class="col-xl-2 col-md-4 col-sm-6 mb-4">
+            <div class="card dashboard-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title">Người dùng</h5>
+                            <h2 class="card-value">@Model.TotalUsers</h2>
+                        </div>
+                        <div class="card-icon info">
+                            <i class="bi bi-people"></i>
+                        </div>
+                    </div>
+                    <div class="card-change mt-2">
+                        <small>@Model.UserRegistrations.LastOrDefault()?.Count mới hôm nay</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-md-4 col-sm-6 mb-4">
+            <div class="card dashboard-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title">Đánh giá chờ</h5>
+                            <h2 class="card-value">@Model.PendingReviews</h2>
+                        </div>
+                        <div class="card-icon secondary">
+                            <i class="bi bi-chat-dots"></i>
+                        </div>
+                    </div>
+                    <div class="card-change mt-2">
+                        <span class="badge bg-danger">@Model.NegativeReviews.Count tiêu cực</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-md-4 col-sm-6 mb-4">
+            <div class="card dashboard-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title">Trả hàng</h5>
+                            <h2 class="card-value">@Model.ReturnRequests</h2>
+                        </div>
+                        <div class="card-icon danger">
+                            <i class="bi bi-arrow-return-left"></i>
+                        </div>
+                    </div>
+                    <div class="card-change mt-2">
+                        <span class="badge bg-warning">@Model.UnansweredReturnRequests.Count chờ xử lý</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-xl-8 mb-4">
+            <div class="card chart-container">
+                <div class="chart-header">
+                    <h5 class="mb-0"><i class="bi bi-graph-up me-2"></i> Doanh thu tuần/tháng gần nhất</h5>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="updateChart('week')">7 ngày</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="updateChart('month')">30 ngày</button>
+                    </div>
+                </div>
+                <div class="chart-body">
+                    <canvas id="salesChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 mb-4">
+            <div class="card chart-container">
+                <div class="chart-header">
+                    <h5 class="mb-0"><i class="bi bi-pie-chart me-2"></i> Phân phối trạng thái đơn hàng</h5>
+                </div>
+                <div class="chart-body">
+                    <canvas id="orderStatusChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-xl-6 mb-4">
+            <div class="card data-table">
+                <div class="table-header">
+                    <h5 class="table-title"><i class="bi bi-clock-history me-2"></i> Đơn hàng mới nhất</h5>
+                    <a asp-area="Admin" asp-controller="Order" asp-action="Index" class="btn btn-sm btn-outline-primary">Xem tất cả</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Mã đơn</th>
+                                <th>Khách hàng</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
+                                <th>Thời gian</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model.RecentOrders)
+                            {
+                                <tr>
+                                    <td><strong>#@order.Id</strong></td>
+                                    <td>@order.User?.FullName</td>
+                                    <td>@order.TotalAmount.ToString("N0") ₫</td>
+                                    <td>
+                                        <span class="status-badge @($"status-{order.Status.ToString().ToLower()}")">
+                                            @order.Status.GetDisplayName()
+                                        </span>
+                                    </td>
+                                    <td>@order.CreatedAt.ToString("HH:mm dd/MM")</td>
+                                </tr>
+                            }
+                            @if (!Model.RecentOrders.Any())
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-center py-3 text-muted">
+                                        <i class="bi bi-inbox me-2"></i> Chưa có đơn hàng nào
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-6 mb-4">
+            <div class="card data-table">
+                <div class="table-header">
+                    <h5 class="table-title"><i class="bi bi-exclamation-triangle me-2"></i> Sản phẩm sắp hết hàng</h5>
+                    <a asp-area="Admin" asp-controller="Products" asp-action="Index" class="btn btn-sm btn-outline-warning">Xem tất cả</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th>Danh mục</th>
+                                <th>Tồn kho</th>
+                                <th>Giá</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var product in Model.LowStockProducts)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar me-3">
+                                                <div class="avatar-placeholder avatar-index bg-primary text-white rounded-circle d-flex align-items-center justify-content-center">
+                                                    @product.Name?.Substring(0, 1).ToUpper()
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0">@product.Name</h6>
+                                                <small class="text-muted">Mã sản phẩm: @product.Id</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>@product.Category?.Name</td>
+                                    <td>
+                                        <span class="badge @(product.Stock <= 5 ? "bg-danger" : "bg-warning")">
+                                            @product.Stock
+                                        </span>
+                                    </td>
+                                    <td>@product.Price.ToString("N0") ₫</td>
+                                    <td>
+                                        @if (product.IsPublished)
+                                        {
+                                            <span class="badge bg-success">Công khai</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Ẩn</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                            @if (!Model.LowStockProducts.Any())
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-center py-3 text-muted">
+                                        <i class="bi bi-check-circle me-2"></i> Tất cả sản phẩm đều đủ hàng
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-xl-6 mb-4">
+            <div class="card data-table">
+                <div class="table-header">
+                    <h5 class="table-title"><i class="bi bi-star me-2"></i> Đánh giá mới chưa duyệt</h5>
+                    <a asp-area="Admin" asp-controller="Reviews" asp-action="Index" class="btn btn-sm btn-outline-info">Duyệt tất cả</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th>Người dùng</th>
+                                <th>Đánh giá</th>
+                                <th>Nội dung</th>
+                                <th>Thời gian</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var review in Model.RecentPendingReviews)
+                            {
+                                <tr>
+                                    <td>@review.Product?.Name</td>
+                                    <td>@review.User?.FullName</td>
+                                    <td>
+                                        <div class="star-rating">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                <i class="bi bi-star@(i <= review.Rating ? "-fill" : "") text-warning"></i>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td class="truncate-text" style="max-width: 150px;">
+                                        @review.Content
+                                    </td>
+                                    <td>@review.CreatedAt.ToString("HH:mm dd/MM")</td>
+                                </tr>
+                            }
+                            @if (!Model.RecentPendingReviews.Any())
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-center py-3 text-muted">
+                                        <i class="bi bi-check-circle me-2"></i> Không có đánh giá chờ duyệt
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i> Thông tin hệ thống</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <h6><i class="bi bi-tags me-2 text-primary"></i> Danh mục</h6>
+                                <p class="fs-4 mb-0">@Model.SystemInfo.TotalCategories</p>
+                            </div>
+                            <div class="mb-3">
+                                <h6><i class="bi bi-award me-2 text-success"></i> Thương hiệu</h6>
+                                <p class="fs-4 mb-0">@Model.SystemInfo.TotalBrands</p>
+                            </div>
+                            <div class="mb-3">
+                                <h6><i class="bi bi-geo-alt me-2 text-info"></i> Địa chỉ giao hàng</h6>
+                                <p class="fs-4 mb-0">@Model.SystemInfo.TotalShippingAddresses</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <h6><i class="bi bi-star-fill me-2 text-warning"></i> Đánh giá trung bình</h6>
+                                <p class="fs-4 mb-0">@Model.SystemInfo.AverageRating.ToString("0.0")/5.0</p>
+                                <div class="star-rating">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <i class="bi bi-star@(i <= Math.Round(Model.SystemInfo.AverageRating) ? "-fill" : "") text-warning"></i>
+                                    }
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <h6><i class="bi bi-calendar me-2 text-secondary"></i> Ngày tháng</h6>
+                                <p class="mb-1">@DateTime.Now.ToString("dddd, dd/MM/yyyy")</p>
+                                <p class="mb-0 text-muted">@DateTime.Now.ToString("HH:mm:ss")</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="bi bi-activity me-2"></i> Hoạt động gần đây</h5>
+                </div>
+                <div class="card-body">
+                    <div class="order-timeline">
+                        @foreach (var activity in Model.RecentActivities)
+                        {
+                            <div class="timeline-item @(activity == Model.RecentActivities.First() ? "current" : "completed")">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0">@activity.Action</h6>
+                                        <small class="text-muted">@activity.PerformedBy</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <small class="text-muted">@activity.Timestamp.ToString("HH:mm")</small>
+                                        <div>
+                                            <span class="badge bg-@(activity.Type == "Order" ? "primary" : "success")">
+                                                @activity.Type
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        @if (!Model.RecentActivities.Any())
+                        {
+                            <div class="text-center py-3 text-muted">
+                                <i class="bi bi-clock-history me-2"></i> Chưa có hoạt động nào
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@{
+    var colorMapping = Enum.GetValues(typeof(OrderStatus))
+                            .Cast<Enum>()
+                            .ToDictionary(
+                                e => e.GetDisplayName(), 
+                                e => e.GetColorHex()     
+                            );
+}
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var salesCtx = document.getElementById('salesChart').getContext('2d');
+            var salesData = @Html.Raw(Json.Serialize(Model.RecentSalesData));
+
+            var salesChart = new Chart(salesCtx, {
+                type: 'line',
+                data: {
+                    labels: salesData.map(item => formatDate(item.date)),
+                    datasets: [{
+                        label: 'Doanh thu (VNĐ)',
+                        data: salesData.map(item => item.amount),
+                        borderColor: '#4361ee',
+                        backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return 'Doanh thu: ' + context.raw.toLocaleString('vi-VN') + ' ₫';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString('vi-VN') + ' ₫';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            var statusCtx = document.getElementById('orderStatusChart').getContext('2d');
+            var statusData = @Html.Raw(Json.Serialize(Model.OrderStatusDistribution));
+
+            var statusLabels = Object.keys(statusData);
+            var statusValues = Object.values(statusData);
+
+            var statusColors = @Html.Raw(Json.Serialize(colorMapping));
+            
+            var orderStatusChart = new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: statusLabels,
+                    datasets: [{
+                        data: statusValues,
+                        backgroundColor: statusLabels.map(label => statusColors[label] || '#6c757d'),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            align: 'start',
+                            labels: {
+                                boxWidth: 12,
+                                font: { size: 11 },
+                                padding: 15,
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    var label = context.label || '';
+                                    var value = context.raw || 0;
+                                    var total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    var percentage = Math.round((value / total) * 100);
+                                    return label + ': ' + value + ' (' + percentage + '%)';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            setInterval(() => {
+                fetch('/Admin/Dashboard/GetSalesChartData?days=7')
+                    .then(response => response.json())
+                    .then(data => {
+                        salesChart.data.labels = data.map(item => formatDate(item.date));
+                        salesChart.data.datasets[0].data = data.map(item => item.amount);
+                        salesChart.update();
+                    });
+            }, 300000); 
+        });
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
+        }
+
+        function updateChart(range) {
+            const days = range === 'month' ? 30 : 7;
+            fetch(`/Admin/Dashboard/GetSalesChartData?days=${days}`)
+                .then(response => response.json())
+                .then(data => {
+                    const salesChart = Chart.getChart('salesChart');
+                    salesChart.data.labels = data.map(item => formatDate(item.date));
+                    salesChart.data.datasets[0].data = data.map(item => item.amount);
+                    salesChart.update();
+                });
+        }
+
+       
+
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent =
+                now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+        setInterval(updateTime, 1000);
+    </script>
+}

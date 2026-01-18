@@ -1,0 +1,333 @@
+﻿/* Products Page Specific Styles */
+
+.filter-card {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--box-shadow);
+    margin-bottom: 2rem;
+}
+
+.filter-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--dark-color);
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 0.5rem;
+}
+
+.filter-section {
+    margin-bottom: 1.5rem;
+}
+
+    .filter-section:last-child {
+        margin-bottom: 0;
+    }
+
+.filter-category-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.filter-category-item {
+    margin-bottom: 0.5rem;
+}
+
+.filter-category-link {
+    color: var(--dark-color);
+    text-decoration: none;
+    padding: 0.5rem;
+    border-radius: var(--border-radius);
+    display: block;
+    transition: var(--transition);
+}
+
+    .filter-category-link:hover,
+    .filter-category-link.active {
+        background-color: rgba(42, 108, 255, 0.1);
+        color: var(--primary-color);
+    }
+
+.price-slider-container {
+    padding: 0 1rem;
+}
+
+.price-inputs {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
+
+.price-input {
+    width: 45%;
+}
+
+.rating-filter {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    cursor: pointer;
+}
+
+.rating-stars {
+    color: var(--warning-color);
+    margin-right: 0.5rem;
+}
+
+.rating-text {
+    color: var(--gray-color);
+    font-size: 0.9rem;
+}
+
+.sort-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+}
+
+.sort-select {
+    width: 200px;
+    padding: 0.5rem;
+    border: 1px solid var(--light-gray);
+    border-radius: var(--border-radius);
+    background: white;
+}
+
+.product-count {
+    color: var(--gray-color);
+    font-size: 0.9rem;
+}
+
+.pagination-container {
+    margin-top: 3rem;
+}
+
+.page-link {
+    color: var(--primary-color);
+    border: 1px solid var(--light-gray);
+    margin: 0 0.25rem;
+    border-radius: var(--border-radius) !important;
+}
+
+    .page-link:hover {
+        background-color: rgba(42, 108, 255, 0.1);
+        border-color: var(--primary-color);
+    }
+
+.page-item.active .page-link {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.view-options {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.view-btn {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--light-gray);
+    border-radius: var(--border-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    color: var(--gray-color);
+    transition: var(--transition);
+}
+
+    .view-btn:hover,
+    .view-btn.active {
+        background-color: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+/* Grid view (default) */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+/* List view */
+.products-list {
+    display: block;
+}
+
+
+
+/* Quick view modal */
+.quick-view-modal .modal-content {
+    border-radius: var(--border-radius);
+    border: none;
+}
+
+.quick-view-img {
+    width: 100%;
+    height: 300px;
+    object-fit: contain;
+    background-color: var(--light-gray);
+    border-radius: var(--border-radius);
+}
+
+.thumbnail-images {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.thumbnail-img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: var(--transition);
+}
+
+    .thumbnail-img:hover,
+    .thumbnail-img.active {
+        border-color: var(--primary-color);
+    }
+
+/* Breadcrumb */
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+    margin-bottom: 1rem;
+}
+
+.breadcrumb-item a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+    .breadcrumb-item a:hover {
+        text-decoration: underline;
+    }
+
+.breadcrumb-item.active {
+    color: var(--gray-color);
+}
+
+/* Loading animation */
+.loading-spinner {
+    display: none;
+    text-align: center;
+    padding: 2rem;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--light-gray);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Empty state */
+.empty-products {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}
+
+    .empty-products i {
+        font-size: 4rem;
+        color: var(--light-gray);
+        margin-bottom: 1rem;
+    }
+
+.products-list > div {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+    margin-bottom: 20px !important;
+}
+
+.products-list .product-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    gap: 20px;
+    border: 1px solid #eee;
+}
+
+    .products-list .product-card .position-relative {
+        width: 50px;
+        min-width: 250px;
+        margin-right: 0;
+        flex-shrink: 0;
+    }
+.add-to-card-btn {
+    width: auto !important;
+    min-width: auto !important;
+    flex-shrink: 1 !important;
+}
+
+.products-list .product-card .product-img {
+    height: 180px !important;
+    border-radius: 8px;
+}
+
+.products-list .product-card .p-3 {
+    padding: 0 20px 0 0 !important;
+    flex-grow: 1;
+    text-align: left;
+}
+
+@media (max-width: 768px) {
+    .products-list .product-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+        .products-list .product-card .position-relative {
+            width: 100%;
+            margin-right: 0;
+            margin-bottom: 15px;
+        }
+
+        .products-list .product-card .product-img {
+            height: 200px !important;
+        }
+}
+
+
+/* Khi cha có class products-list thì con tự đổi style */
+.noUi-connect {
+    background: #0d6efd; /* Màu xanh Primary */
+}
+
+.noUi-horizontal {
+    height: 10px;
+}
+
+.noUi-handle {
+    height: 20px;
+    width: 20px;
+    top: -6px;
+    border-radius: 50%;
+    cursor: grab;
+}

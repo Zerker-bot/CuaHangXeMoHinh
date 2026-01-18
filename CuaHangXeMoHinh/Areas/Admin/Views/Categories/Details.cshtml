@@ -1,0 +1,166 @@
+﻿@model Category
+
+@{
+    ViewData["Title"] = "Chi tiết danh mục";
+    ViewData["ActiveMenu"] = "categories";
+}
+
+<div class="container-fluid">
+    <div class="header mb-4">
+        <h1 class="header-title">
+            <i class="bi bi-tags me-2"></i>
+            @ViewData["Title"]
+        </h1>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-lg-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="avatar-placeholder avatar-detail bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3">
+                        @Model.Name?.Substring(0, 1).ToUpper()
+                    </div>
+                    <h3 class="mb-2">@Model.Name</h3>
+                    <div class="mb-4">
+                        <span class="badge bg-info">
+                            <i class="bi bi-box me-1"></i>
+                            @Model.Products.Count sản phẩm
+                        </span>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
+                            <i class="bi bi-pencil me-2"></i>
+                            Chỉnh sửa
+                        </a>
+                        <form asp-action="Delete" asp-route-id="@Model.Id"
+                              method="post" class="js-delete-form">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-outline-danger w-100">
+                                <i class="bi bi-trash me-2"></i>
+                                Xóa danh mục
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Thông tin chi tiết
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted small">ID danh mục</label>
+                            <p class="mb-0">@Model.Id</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted small">Tổng số sản phẩm</label>
+                            <p class="mb-0">
+                                <span class="fw-semibold">@Model.Products.Count</span> sản phẩm
+                            </p>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label class="form-label text-muted small">Mô tả</label>
+                            @if (!string.IsNullOrEmpty(Model.Description))
+                            {
+                                <div class="p-3 bg-light rounded">
+                                    @Model.Description
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="text-muted mb-0">Không có mô tả</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white border-bottom">
+            <h5 class="card-title mb-0">
+                <i class="bi bi-box-seam me-2"></i>
+                Sản phẩm thuộc danh mục
+                <span class="badge bg-secondary ms-2">@Model.Products.Count</span>
+            </h5>
+        </div>
+        <div class="card-body">
+            @if (Model.Products.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Giá</th>
+                                <th>Tồn kho</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var product in Model.Products)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">#@product.Id</td>
+                                    <td>@product.Name</td>
+                                    <td class="fw-semibold">@product.Price.ToString("N0") ₫</td>
+                                    <td>
+                                        @if (product.Stock > 0)
+                                        {
+                                            <span class="badge bg-success">@product.Stock</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">Hết hàng</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (product.IsPublished)
+                                        {
+                                            <span class="badge bg-success">Đang bán</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Ẩn</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <div class="mb-3">
+                        <i class="bi bi-box text-muted" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5 class="text-muted">Chưa có sản phẩm nào</h5>
+                    <p class="text-muted">Chưa có sản phẩm nào thuộc danh mục này</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>
+            Quay lại danh sách
+        </a>
+    </div>
+</div>
+
+@section Scripts {
+    
+}

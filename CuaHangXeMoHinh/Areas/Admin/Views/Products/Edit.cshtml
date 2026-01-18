@@ -1,0 +1,206 @@
+﻿@model Product
+
+@{
+    ViewData["Title"] = "Chỉnh sửa sản phẩm";
+    ViewData["ActiveMenu"] = "products";
+}
+
+<div class="container-fluid">
+    <div class="header mb-4">
+        <h1 class="header-title">
+            <i class="bi bi-pencil-square me-2"></i>
+            @ViewData["Title"]
+        </h1>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-box-seam me-2"></i>
+                        Chỉnh sửa thông tin
+                    </h5>
+                    <div class="card-tools">
+                        <span class="badge bg-info">ID: @Model.Id</span>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Name" class="form-label"></label>
+                                <input asp-for="Name" class="form-control"
+                                       placeholder="Nhập tên sản phẩm" />
+                                <span asp-validation-for="Name" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CategoryId" class="form-label"></label>
+                                <select asp-for="CategoryId" asp-items="ViewBag.CategoryId"
+                                        class="form-control">
+                                    <option value="">-- Chọn danh mục --</option>
+                                </select>
+                                <span asp-validation-for="CategoryId" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="BrandId" class="form-label"></label>
+                                <select asp-for="BrandId" asp-items="ViewBag.BrandId"
+                                        class="form-control">
+                                    <option value="">-- Chọn thương hiệu --</option>
+                                </select>
+                                <span asp-validation-for="BrandId" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Price" class="form-label"></label>
+                                <div class="input-group">
+                                    <input asp-for="Price" class="form-control"
+                                           placeholder="Nhập giá bán" />
+                                    <span class="input-group-text">₫</span>
+                                </div>
+                                <span asp-validation-for="Price" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Cost" class="form-label"></label>
+                                <div class="input-group">
+                                    <input asp-for="Cost" class="form-control"
+                                           placeholder="Nhập giá gốc" />
+                                    <span class="input-group-text">₫</span>
+                                </div>
+                                <span asp-validation-for="Cost" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Stock" class="form-label"></label>
+                                <input asp-for="Stock" class="form-control"
+                                       placeholder="Nhập số lượng tồn kho" />
+                                <span asp-validation-for="Stock" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-12 mb-3">
+                                <label asp-for="Description" class="form-label"></label>
+                                <textarea asp-for="Description" class="form-control"
+                                          rows="4"
+                                          placeholder="Nhập mô tả sản phẩm"></textarea>
+                                <span asp-validation-for="Description" class="text-danger small"></span>
+                            </div>
+                            <div class="col-12 mb-4">
+                                <label class="form-label">Ảnh sản phẩm</label>
+
+                                <div id="productImagesContainer">
+                                    @if (Model.Images != null && Model.Images.Any())
+                                    {
+                                        <div class="row g-2" id="currentImages">
+                                            @foreach (var img in Model.Images.OrderByDescending(i => i.IsPrimary))
+                                            {
+                                                <div class="col-md-3 col-sm-4 col-6" data-image-id="@img.Id">
+                                                    <div class="card image-card @(img.IsPrimary ? "border-primary" : "")">
+                                                        <img src="@img.Url" class="card-img-top" alt="@img.AltText" style="height: 120px; object-fit: cover;">
+                                                        <div class="card-body p-2">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <small class="@(img.IsPrimary ? "text-primary fw-bold" : "")">
+                                                                    @if (img.IsPrimary)
+                                                                    {
+                                                                        <span>Ảnh chính</span>
+                                                                    }
+                                                                </small>
+                                                                <div class="btn-group btn-group-sm">
+                                                                    <button type="button"
+                                                                            class="btn btn-outline-primary btn-set-primary @(img.IsPrimary ? "active" : "")"
+                                                                            data-image-id="@img.Id"
+                                                                    @(img.IsPrimary ? "disabled" : "")>
+                                                                        <i class="bi @(img.IsPrimary ? "bi-star-fill" : "bi-star")"></i>
+                                                                    </button>
+                                                                    <button type="button"
+                                                                            class="btn btn-outline-danger btn-delete-image"
+                                                                            data-image-id="@img.Id"
+                                                                            data-image-url="@img.Url">
+                                                                        <i class="bi bi-trash"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="alert alert-warning">
+                                            <i class="bi bi-exclamation-triangle me-2"></i>
+                                            Sản phẩm chưa có ảnh. Vui lòng thêm ít nhất một ảnh.
+                                        </div>
+                                    }
+                                </div>
+                               
+                                <div class="d-flex gap-2 mt-2">
+                                    <button type="button"
+                                            class="btn btn-success"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#productImageModal"
+                                            data-product-id="@Model.Id">
+                                        <i class="bi bi-plus-circle me-2"></i>
+                                        Thêm ảnh mới
+                                    </button>
+
+                                   
+                                </div>
+
+                                <small class="form-text text-muted">
+                                    Tối đa 10 ảnh. Kích thước khuyến nghị: 800x800px. Định dạng: JPG, PNG
+                                </small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox"
+                                           asp-for="IsPublished">
+                                    <label class="form-check-label" asp-for="IsPublished">
+                                        Công khai sản phẩm
+                                    </label>
+                                </div>
+                                <small class="form-text text-muted">
+                                    Nếu bật, sản phẩm sẽ hiển thị trên website
+                                </small>
+                            </div>
+                        </div>
+                        <div class="pt-3 border-top">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save me-2"></i>
+                                Cập nhật sản phẩm
+                            </button>
+                            <a asp-action="Details" asp-route-id="@Model.Id"
+                               class="btn btn-outline-secondary ms-2">
+                                <i class="bi bi-eye me-2"></i>
+                                Xem chi tiết
+                            </a>
+                            <a asp-action="Index" class="btn btn-outline-secondary ms-2">
+                                <i class="bi bi-arrow-left me-2"></i>
+                                Quay lại
+                            </a>
+                        </div>
+                    </form>
+                     
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<partial name="_ProductImageModalPartial" />
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/js/Admin/product-image-modal.js"></script>
+}
+
+
+      

@@ -1,0 +1,172 @@
+﻿@model IEnumerable<Product>
+@{
+    ViewData["Title"] = "Bộ Sưu Tập";
+    var categories = ViewBag.Categories as List<CuaHangXeMoHinh.Models.Category>;
+    var currentCategoryId = ViewBag.CategoryId;
+    var currentSortBy = ViewBag.SortBy;
+    var currentPage = ViewBag.CurrentPage;
+    var totalPages = ViewBag.TotalPages;
+}
+
+<div class="container mx-auto px-4 py-8">
+    <div class="flex flex-col lg:flex-row gap-8">
+        
+        <!-- Sidebar Filters -->
+        <div class="w-full lg:w-1/4">
+            <div class="bg-zinc-900 border border-zinc-800 p-6 sticky top-24">
+                <div class="flex items-center justify-between mb-6 border-b border-zinc-800 pb-4">
+                    <h5 class="font-display text-xl font-bold text-white">BỘ LỌC</h5>
+                    <a asp-action="Index" asp-controller="Products" class="text-xs text-zinc-500 hover:text-primary transition-colors uppercase tracking-wider">
+                        <i class="bi bi-arrow-counterclockwise"></i> Đặt lại
+                    </a>
+                </div>
+
+                <!-- Categories -->
+                <div class="mb-8">
+                    <h6 class="text-sm font-bold text-zinc-400 uppercase tracking-widest mb-4">Dòng Xe</h6>
+                    <ul class="space-y-2">
+                        <li>
+                            <a asp-action="Index"
+                               asp-controller="Products"
+                               asp-route-categoryId=""
+                               asp-route-sortBy="@currentSortBy"
+                               asp-route-page="1"
+                               asp-route-search="@ViewBag.Search"
+                               class="flex items-center justify-between p-2 rounded text-sm transition-all @(currentCategoryId == null ? "bg-primary text-white font-bold" : "text-zinc-300 hover:bg-zinc-800 hover:text-white")">
+                                <span>Tất cả</span>
+                                @if(currentCategoryId == null) { <i class="bi bi-check-lg"></i> }
+                            </a>
+                        </li>
+                        @if (categories != null)
+                        {
+                            @foreach (var category in categories)
+                            {
+                                <li>
+                                    <a asp-action="Index"
+                                       asp-controller="Products"
+                                       asp-route-categoryId="@category.Id"
+                                       asp-route-sortBy="@currentSortBy"
+                                       asp-route-page="1"
+                                       asp-route-search="@ViewBag.Search"
+                                       class="flex items-center justify-between p-2 rounded text-sm transition-all @(currentCategoryId == category.Id ? "bg-primary text-white font-bold" : "text-zinc-300 hover:bg-zinc-800 hover:text-white")">
+                                        <span>@category.Name</span>
+                                        @if(currentCategoryId == category.Id) { <i class="bi bi-check-lg"></i> }
+                                    </a>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+
+                <!-- Price Filter -->
+                <form asp-controller="Products" asp-action="Index" method="get">
+                    <h6 class="text-sm font-bold text-zinc-400 uppercase tracking-widest mb-4">Khoảng Giá</h6>
+                    
+                    <div class="flex items-center gap-2 mb-4">
+                        <input type="number" name="minPrice" id="minPriceInput" placeholder="Min" value="@(ViewBag.MinPrice ?? 0)"
+                               class="w-full bg-zinc-950 border border-zinc-700 text-white text-sm p-2 rounded focus:border-primary focus:ring-1 focus:ring-primary outline-none text-center">
+                        <span class="text-zinc-500">-</span>
+                        <input type="number" name="maxPrice" id="maxPriceInput" placeholder="Max" value="@(ViewBag.MaxPrice ?? 10000000)"
+                               class="w-full bg-zinc-950 border border-zinc-700 text-white text-sm p-2 rounded focus:border-primary focus:ring-1 focus:ring-primary outline-none text-center">
+                    </div>
+
+                    @if (ViewBag.CategoryId != null) { <input type="hidden" name="categoryId" value="@ViewBag.CategoryId" /> }
+                    @if (ViewBag.Search != null) { <input type="hidden" name="search" value="@ViewBag.Search" /> }
+                    @if (ViewBag.SortBy != null) { <input type="hidden" name="sortBy" value="@ViewBag.SortBy" /> }
+
+                    <button type="submit" class="w-full btn-luxury flex items-center justify-center gap-2 mt-2">
+                        <i class="bi bi-funnel"></i> Lọc
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="w-full lg:w-3/4">
+            <!-- Toolbar -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between bg-zinc-900 border border-zinc-800 p-4 mb-6">
+                <div class="mb-4 md:mb-0">
+                    <p class="text-zinc-400 text-sm">Hiển thị <span class="text-white font-bold">@Model.Count()</span> mẫu xe</p>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <div class="relative">
+                        <select id="sortSelect" onchange="window.location.href=this.value" class="bg-zinc-950 border border-zinc-700 text-white text-sm pl-3 pr-10 py-2 rounded focus:border-primary outline-none appearance-none cursor-pointer hover:border-zinc-500 transition-colors">
+                             <!-- Note used Query String construction for simplicity in this prototype. In real app, cleaner JS needed -->
+                            <option value="?sortBy=price-asc">Giá: Thấp đến cao</option>
+                            <option value="?sortBy=price-desc">Giá: Cao đến thấp</option>
+                            <option value="?sortBy=newest">Mới nhất</option>
+                        </select>
+                        <i class="bi bi-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 text-xs pointer-events-none"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid -->
+            @if (Model.Any())
+            {
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+                    @foreach (var item in Model)
+                    {
+                        <partial name="_ProductCard" model="item" />
+                    }
+                </div>
+
+                <!-- Pagination -->
+                <div class="mt-12 flex justify-center">
+                    <div class="flex gap-2">
+                         @{
+                            var categoryId = ViewBag.CategoryId;
+                            var search = ViewBag.Search;
+                            var minPrice = Context.Request.Query["minPrice"];
+                            var maxPrice = Context.Request.Query["maxPrice"];
+                        }
+                        
+                        @if(currentPage > 1) {
+                            <a href="@Url.Action("Index", new { page = currentPage - 1, categoryId, search, minPrice, maxPrice, sortBy = currentSortBy })" 
+                               class="w-10 h-10 flex items-center justify-center border border-zinc-700 text-zinc-400 hover:border-primary hover:text-primary transition-colors bg-zinc-900">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        }
+
+                        @for (var i = 1; i <= totalPages; i++)
+                        {
+                            <a href="@Url.Action("Index", new { page = i, categoryId, search, minPrice, maxPrice, sortBy = currentSortBy })" 
+                               class="w-10 h-10 flex items-center justify-center border transition-colors font-bold @(i == currentPage ? "border-primary bg-primary text-white" : "border-zinc-700 bg-zinc-900 text-zinc-400 hover:border-primary hover:text-primary")">
+                                @i
+                            </a>
+                        }
+
+                        @if(currentPage < totalPages) {
+                            <a href="@Url.Action("Index", new { page = currentPage + 1, categoryId, search, minPrice, maxPrice, sortBy = currentSortBy })" 
+                               class="w-10 h-10 flex items-center justify-center border border-zinc-700 text-zinc-400 hover:border-primary hover:text-primary transition-colors bg-zinc-900">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        }
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-20 bg-zinc-900/50 border border-zinc-800 border-dashed">
+                    <div class="w-16 h-16 bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="bi bi-search text-2xl text-zinc-500"></i>
+                    </div>
+                    <h3 class="text-xl font-display font-bold text-white mb-2">Không tìm thấy mẫu xe nào</h3>
+                    <p class="text-zinc-500">Hãy thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/js/Customer/Products/index.js" asp-append-version="true"></script>
+    <script>
+        // Simple JS to handle sort change without full jQuery overhead if needed
+        document.getElementById('sortSelect').addEventListener('change', function() {
+           // Basic logic, ideally needs to preserve other query params
+           // For this prototype, rely on user selecting and it reloading page
+        });
+    </script>
+}

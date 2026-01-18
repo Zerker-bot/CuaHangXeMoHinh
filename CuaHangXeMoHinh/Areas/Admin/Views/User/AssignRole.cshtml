@@ -1,0 +1,154 @@
+﻿@using CuaHangXeMoHinh.Areas.Admin.Models.ViewModels
+@model ManageUserRolesViewModel
+
+@{
+    ViewData["Title"] = "Phân quyền người dùng";
+    ViewData["ActiveMenu"] = "user-management";
+}
+
+<div class="container-fluid">
+    <div class="header mb-4">
+        <h1 class="header-title">
+            <i class="bi bi-shield-check me-2"></i>
+            @ViewData["Title"]
+        </h1>      
+    </div>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <div class="avatar-placeholder avatar-assignRole bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
+                                 >
+                                @Model.FullName?.Substring(0, 1).ToUpper()
+                            </div>
+                        </div>
+                        <div class="col">
+                            <h4 class="mb-1">@Model.FullName</h4>
+                            <p class="text-muted mb-0">Chọn các vai trò cho người dùng này</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-list-check me-2"></i>
+                        Danh sách vai trò
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="AssignRole" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="UserId" />
+                        <input type="hidden" asp-for="FullName" />
+
+                        @if (Model.UserRoles.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class"w-5"></th>
+                                            <th class"w-25">Tên vai trò</th>
+                                            <th class"w-70">Mô tả</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (int i = 0; i < Model.UserRoles.Count; i++)
+                                        {
+                                            var role = Model.UserRoles[i];
+                                            var description = GetRoleDescription(role.RoleName);
+
+                                            <tr>
+                                                <td>
+                                                    <input type="hidden" asp-for="@Model.UserRoles[i].RoleId" />
+                                                    <input type="hidden" asp-for="@Model.UserRoles[i].RoleName" />
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox"
+                                                               asp-for="@Model.UserRoles[i].IsSelected"
+                                                               id="role-@role.RoleId">
+                                                        <label class="form-check-label" for="role-@role.RoleId"></label>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <label class="form-check-label fw-semibold" for="role-@role.RoleId">
+                                                        @role.RoleName
+                                                    </label>
+                                                </td>
+                                                <td>
+                                                    <small class="text-muted">@description</small>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle me-2"></i>
+                                Chưa có vai trò nào được định nghĩa trong hệ thống.
+                            </div>
+                        }
+
+                        <div class="mt-4 pt-3 border-top">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save me-2"></i>
+                                Lưu thay đổi
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary ms-2">
+                                <i class="bi bi-arrow-left me-2"></i>
+                                Quay lại
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Hướng dẫn
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        <strong>Lưu ý quan trọng:</strong>
+                        <ul class="mt-2 mb-0 ps-3">
+                            <li>Không thể xóa vai trò Admin của chính mình</li>
+                            <li>Vai trò Admin có toàn quyền truy cập hệ thống</li>
+                            <li>Vai trò Manager có quyền quản lý sản phẩm và đơn hàng</li>
+                            <li>Vai trò Staff chỉ có quyền xem và cập nhật đơn hàng</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string GetRoleDescription(string roleName)
+    {
+        return roleName switch
+        {
+            "Admin" => "Toàn quyền truy cập và quản lý hệ thống",
+            "Manager" => "Quản lý sản phẩm, đơn hàng và người dùng",
+            "Staff" => "Xử lý đơn hàng và hỗ trợ khách hàng",
+            "Customer" => "Người dùng thông thường, mua sắm trên website",
+            _ => "Vai trò người dùng"
+        };
+    }
+}
+

@@ -1,0 +1,236 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - LUXURY MODELS</title>
+    @inject CuaHangXeMoHinh.Data.ApplicationDbContext _dbContext
+   
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+          darkMode: 'class',
+          theme: {
+            extend: {
+              colors: {
+                background: "#09090b",
+                foreground: "#fafafa",
+                card: "#18181b",
+                'card-foreground': "#fafafa",
+                popover: "#18181b",
+                'popover-foreground': "#fafafa",
+                primary: {
+                  DEFAULT: "#ef4444", // Ferrari Red
+                  foreground: "#ffffff",
+                },
+                secondary: {
+                  DEFAULT: "#27272a", // Zinc 800
+                  foreground: "#fafafa",
+                },
+                muted: {
+                  DEFAULT: "#27272a",
+                  foreground: "#a1a1aa",
+                },
+                accent: {
+                  DEFAULT: "#d4af37", // Metallic Gold
+                  foreground: "#09090b",
+                },
+                destructive: {
+                  DEFAULT: "#7f1d1d",
+                  foreground: "#fafafa",
+                },
+                border: "#27272a",
+                input: "#27272a",
+                ring: "#ef4444",
+              },
+              fontFamily: {
+                sans: ['Inter', 'sans-serif'],
+                display: ['Orbitron', 'sans-serif'],
+              }
+            }
+          }
+        }
+    </script>
+
+    <style type="text/tailwindcss">
+        @@layer base {
+          body {
+            @@apply bg-background text-foreground antialiased;
+          }
+          h1, h2, h3, h4, h5, h6 {
+            @@apply font-display tracking-wide;
+          }
+        }
+        @@layer utilities {
+            .glass {
+                @@apply bg-zinc-950/80 backdrop-blur-md border-b border-white/5;
+            }
+            .text-glow {
+                text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+            }
+            .btn-luxury {
+                @@apply bg-primary text-white font-medium py-2 px-6 rounded-none hover:bg-red-600 transition-all duration-300 uppercase tracking-wider text-sm clip-path-slant;
+            }
+            .clip-path-slant {
+                clip-path: polygon(10% 0, 100% 0, 100% 100%, 0% 100%);
+            }
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #09090b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3f3f46;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #52525b;
+        }
+    </style>
+</head>
+<body class="bg-background text-foreground min-h-screen flex flex-col selection:bg-red-500/30 cursor-none">
+    <div class="cursor-dot hidden md:block fixed top-0 left-0 w-2 h-2 bg-white rounded-full z-[9999] pointer-events-none -translate-x-1/2 -translate-y-1/2 will-change-transform shadow-[0_0_8px_rgba(0,0,0,0.8)]"></div>
+    <div class="cursor-outline hidden md:block fixed top-0 left-0 w-6 h-6 border border-white rounded-full z-[9999] pointer-events-none -translate-x-1/2 -translate-y-1/2 transition-all duration-200 ease-out will-change-transform shadow-[0_0_8px_rgba(0,0,0,0.8)]"></div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const cursorDot = document.querySelector('.cursor-dot');
+            const cursorOutline = document.querySelector('.cursor-outline');
+            
+            // Mouse Move
+            window.addEventListener("mousemove", function (e) {
+                const posX = e.clientX;
+                const posY = e.clientY;
+
+                // Dot follows immediately
+                cursorDot.style.left = `${posX}px`;
+                cursorDot.style.top = `${posY}px`;
+
+                // Outline follows with slight delay
+                cursorOutline.animate({
+                    left: `${posX}px`,
+                    top: `${posY}px`
+                }, { duration: 500, fill: "forwards" }); 
+            });
+
+            // Hover Effects
+            const interactiveElements = document.querySelectorAll('a, button, input, .card-3d-wrapper');
+            
+            interactiveElements.forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    // Focus Ring Styling: Scale up, transparent bg, thicker border
+                    cursorOutline.classList.add('scale-[1.5]', 'bg-transparent', 'border-white', 'border-[2px]');
+                    cursorDot.classList.add('opacity-0'); 
+                });
+                el.addEventListener('mouseleave', () => {
+                    cursorOutline.classList.remove('scale-[1.5]', 'bg-transparent', 'border-white', 'border-[2px]');
+                    cursorDot.classList.remove('opacity-0');
+                });
+            });
+        });
+    </script>
+
+    <header class="fixed top-0 left-0 right-0 z-50">
+        @{
+            await Html.RenderPartialAsync("_NavbarMainPartial");
+        }
+    </header>
+
+    <main id="main-content" class="flex-grow pt-20">
+        @RenderBody()
+    </main>
+
+    <footer class="bg-zinc-900 border-t border-zinc-800 pt-16 pb-8 mt-20">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div class="col-span-1 md:col-span-1">
+                    <a href="/" class="flex items-center gap-2 mb-6">
+                        <i class="bi bi-speedometer2 text-3xl text-primary"></i>
+                        <span class="font-display text-2xl font-bold italic tracking-tighter text-white">LUXURY<span class="text-primary">MODELS</span></span>
+                    </a>
+                    <p class="text-zinc-400 text-sm leading-relaxed mb-6">
+                        Dành cho những người đam mê tốc độ và sự hoàn hảo. Bộ sưu tập xe mô hình cao cấp, chi tiết đến từng milimet.
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-400 hover:bg-primary hover:text-white transition-colors"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-400 hover:bg-primary hover:text-white transition-colors"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-400 hover:bg-primary hover:text-white transition-colors"><i class="bi bi-youtube"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-span-1">
+                    <h4 class="font-display text-lg font-bold mb-6 text-white uppercase tracking-wider">Bộ sưu tập</h4>
+                    <ul class="space-y-3 text-sm text-zinc-400">
+                        @foreach(var cat in _dbContext.Categories.Take(5).ToList())
+                        {
+                             <li>
+                                 <a asp-controller="Products" asp-action="Index" asp-route-categoryId="@cat.Id" class="hover:text-primary transition-colors hover:pl-2 duration-300">
+                                     @cat.Name
+                                 </a>
+                             </li>
+                        }
+                    </ul>
+                </div>
+
+                <div class="col-span-1">
+                    <h4 class="font-display text-lg font-bold mb-6 text-white uppercase tracking-wider">Hỗ trợ</h4>
+                    <ul class="space-y-3 text-sm text-zinc-400">
+                        <li><a href="#" class="hover:text-primary transition-colors hover:pl-2 duration-300">Bảo hành 12 tháng</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors hover:pl-2 duration-300">Vận chuyển & Giao nhận</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors hover:pl-2 duration-300">Hướng dẫn bảo quản</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors hover:pl-2 duration-300">Liên hệ CSKH</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-span-1">
+                    <h4 class="font-display text-lg font-bold mb-6 text-white uppercase tracking-wider">Showroom</h4>
+                    <ul class="space-y-4 text-sm text-zinc-400">
+                        <li class="flex items-start gap-3">
+                            <i class="bi bi-geo-alt mt-1 text-primary"></i>
+                            <span>123 Đại Lộ Tốc Độ, Quận 1, TP.HCM</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="bi bi-telephone text-primary"></i>
+                            <span>0909 888 999</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="bi bi-envelope text-primary"></i>
+                            <span>sales@luxurymodels.vn</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-zinc-800 pt-8 flex flex-col md:flex-row justify-between items-center text-zinc-500 text-xs">
+                <p>&copy; 2024 Luxury Model Cars. All rights reserved.</p>
+                <div class="flex gap-4 mt-4 md:mt-0">
+                    <img src="https://img.icons8.com/color/48/000000/visa.png" alt="Visa" class="h-6 opacity-50 grayscale hover:grayscale-0 transition-all">
+                    <img src="https://img.icons8.com/color/48/000000/mastercard.png" alt="Mastercard" class="h-6 opacity-50 grayscale hover:grayscale-0 transition-all">
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script src="~/js/Customer/Products/detail.js" asp-append-version="true"></script>
+    <script src="~/js/Customer/Cart/index.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

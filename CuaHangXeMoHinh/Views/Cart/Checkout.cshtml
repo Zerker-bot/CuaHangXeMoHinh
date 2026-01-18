@@ -1,0 +1,213 @@
+﻿@model CuaHangXeMoHinh.ViewModels.CheckoutViewModel
+@{
+    ViewData["Title"] = "Thanh Toán";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mx-auto px-4 py-24 min-h-screen">
+    <div class="flex flex-col md:flex-row items-center justify-between mb-12">
+        <h1 class="text-4xl md:text-5xl font-display font-bold text-white uppercase tracking-tighter">
+            SECURE <span class="text-stroke-primary text-transparent">CHECKOUT</span>
+        </h1>
+        <div class="flex items-center gap-2 text-zinc-500 mt-4 md:mt-0">
+             <i class="bi bi-shield-lock-fill text-primary"></i>
+             <span class="text-sm tracking-widest uppercase">Encrypted Transaction</span>
+        </div>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="bg-red-500/10 border border-red-500/20 text-red-500 p-4 mb-8 flex justify-between items-center backdrop-blur-sm" role="alert">
+            <div class="flex items-center gap-3">
+                 <i class="bi bi-exclamation-triangle-fill"></i>
+                 <span>@TempData["Error"]</span>
+            </div>
+            <button type="button" class="text-red-500 hover:text-white transition-colors" data-bs-dismiss="alert"><i class="bi bi-x-lg"></i></button>
+        </div>
+    }
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Left Column: Shipping & Order Details -->
+        <div class="lg:col-span-2 space-y-8">
+            
+            <!-- Address Section -->
+            <div class="bg-zinc-900/50 border border-white/10 p-8 backdrop-blur-md relative overflow-hidden group">
+                <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                
+                <h5 class="flex items-center gap-3 text-xl font-display font-bold text-white mb-6 relative z-10">
+                    <span class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-primary text-sm">1</span>
+                    SHIPPING INFORMATION
+                </h5>
+
+                <div class="relative z-10">
+                    <label class="block text-xs uppercase tracking-widest text-zinc-500 mb-2">Delivery Address</label>
+
+                    @if (Model.Addresses != null && Model.Addresses.Any())
+                    {
+                        <div class="relative">
+                            <select id="addressSelect" class="w-full bg-zinc-950 border border-white/10 text-white p-4 focus:border-primary focus:ring-0 appearance-none cursor-pointer transition-colors" onchange="selectAddress(this.value)">
+                                <option value="">-- Select Delivery Address --</option>
+                                @foreach (var address in Model.Addresses)
+                                {
+                                    var selected = address.Id == Model.SelectedAddressId;
+                                    <option value="@address.Id" selected="@(selected ? "selected" : null)">
+                                        @address.Line1, @address.City, @address.Province @(address.IsDefault ? "(Default)" : "")
+                                    </option>
+                                }
+                            </select>
+                            <i class="bi bi-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none"></i>
+                        </div>
+                        <span asp-validation-for="SelectedAddressId" class="text-red-500 text-xs mt-1 block"></span>
+                    }
+                    else
+                    {
+                        <div class="bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 p-4 mb-4">
+                            You don't have any saved addresses. <a asp-action="Profile" asp-controller="Account" class="underline hover:text-white transition-colors decoration-dashed">Add Address Now</a>
+                        </div>
+                    }
+                    
+                    <!-- Selected Address Preview -->
+                    <div id="selectedAddress" class="mt-6 p-4 bg-zinc-950/50 border border-white/5 hidden">
+                        <h6 class="text-xs uppercase text-zinc-500 mb-2">Selected Location:</h6>
+                        <p id="addressDetails" class="text-white font-mono text-sm"></p>
+                    </div>
+
+                    <div class="mt-6">
+                        <label for="orderNote" class="block text-xs uppercase tracking-widest text-zinc-500 mb-2">Order Notes (Optional)</label>
+                        <textarea id="orderNote" name="Note" class="w-full bg-zinc-950 border border-white/10 text-white p-4 focus:border-primary focus:ring-0 transition-colors min-h-[120px]" 
+                                  placeholder="Special instructions for delivery..."
+                                  form="checkoutForm">@Model.Note</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Section -->
+            <div class="bg-zinc-900/50 border border-white/10 p-8 backdrop-blur-md relative overflow-hidden group">
+                 <div class="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                
+                <h5 class="flex items-center gap-3 text-xl font-display font-bold text-white mb-6 relative z-10">
+                    <span class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-blue-400 text-sm">2</span>
+                    ORDER ITEMS
+                </h5>
+                
+                <div class="relative z-10 overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-white/10 text-zinc-500 text-xs uppercase tracking-wider">
+                                <th class="py-4">Product</th>
+                                <th class="py-4">Price</th>
+                                <th class="py-4">Qty</th>
+                                <th class="py-4 text-right">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5">
+                            @foreach (var item in Model.CartItems)
+                            {
+                                <tr class="group/row hover:bg-white/5 transition-colors">
+                                    <td class="py-4">
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-16 h-16 bg-zinc-800 border border-white/10 overflow-hidden relative">
+                                                <img src="@(item.Product.Images?.FirstOrDefault()?.Url ?? "https://placehold.co/400")"
+                                                     alt="@item.Product.Name" 
+                                                     class="w-full h-full object-cover grayscale group-hover/row:grayscale-0 transition-all duration-500">
+                                            </div>
+                                            <div>
+                                                <h6 class="text-white font-bold text-sm line-clamp-2">@item.Product.Name</h6>
+                                                <p class="text-zinc-500 text-xs">@item.Product.Category?.Name</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-4 text-zinc-300 font-mono text-sm">@item.Product.Price.ToString("N0")</td>
+                                    <td class="py-4 text-zinc-300 text-sm">x @item.Quantity</td>
+                                    <td class="py-4 text-primary font-bold font-mono text-sm text-right">@item.TotalPrice.ToString("N0")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Column: Summary -->
+        <div class="lg:col-span-1">
+            <div class="bg-zinc-900 border border-zinc-800 p-8 sticky top-24 shadow-2xl">
+                <h5 class="text-xl font-display font-bold text-white mb-6 border-b border-white/10 pb-4">
+                    SUMMARY
+                </h5>
+                
+                <div class="space-y-4 mb-6">
+                    <div class="flex justify-between text-zinc-400 text-sm">
+                        <span>Subtotal</span>
+                        <span class="font-mono text-white">@Model.Subtotal.ToString("N0") đ</span>
+                    </div>
+                    
+                    <div class="flex justify-between text-zinc-400 text-sm">
+                        <span>Shipping</span>
+                        <span class="font-mono text-white">@Model.ShippingFee.ToString("N0") đ</span>
+                    </div>
+                    
+                    <div class="flex justify-between text-zinc-400 text-sm">
+                        <span>Discount</span>
+                        <span class="font-mono text-green-400">- @Model.Discount.ToString("N0") đ</span>
+                    </div>
+                </div>
+                
+                <div class="border-t border-white/10 pt-4 flex justify-between items-end mb-8">
+                    <span class="text-zinc-500 text-xs uppercase tracking-widest">Total</span>
+                    <span class="text-3xl font-display font-bold text-primary">@Model.Total.ToString("N0") đ</span>
+                </div>
+
+                <form id="checkoutForm" method="post" action="@Url.Action("PlaceOrder", "Cart")">
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden" name="SelectedAddressId" id="SelectedAddressIdHidden"
+                           value="@(Model.SelectedAddressId.HasValue ? Model.SelectedAddressId.Value : 0)" />
+
+                    <input type="hidden" name="ShippingFee" value="@Model.ShippingFee" />
+                    <input type="hidden" name="Discount" value="@Model.Discount" />
+
+                
+                    <button type="submit" class="w-full bg-white text-black h-14 font-bold tracking-widest hover:bg-primary hover:text-white transition-all duration-300 flex items-center justify-center gap-2 group mb-4">
+                        CONFIRM ORDER <i class="bi bi-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                    </button>
+                </form>
+                
+                <a href="@Url.Action("Index", "Cart")" class="block text-center text-zinc-500 text-sm hover:text-white transition-colors">
+                    <i class="bi bi-arrow-left me-1"></i> Return to Cart
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+        <script>
+        // Keep original logic, just ensuring IDs match
+        function selectAddress(addressId) {
+            const addressSelect = document.getElementById('addressSelect');
+            const selectedAddressDiv = document.getElementById('selectedAddress');
+            const addressDetails = document.getElementById('addressDetails');
+            const selectedAddressIdHidden = document.getElementById('SelectedAddressIdHidden');
+
+            if (addressId) {
+                 // Find layout friendly text
+                const selectedOption = addressSelect.options[addressSelect.selectedIndex];
+                addressDetails.textContent = selectedOption.text.trim();
+                selectedAddressDiv.classList.remove('hidden'); // Use classList for Tailwind
+
+                selectedAddressIdHidden.value = addressId;
+            } else {
+                selectedAddressDiv.classList.add('hidden'); // Use classList for Tailwind
+                selectedAddressIdHidden.value = '0';
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function () {
+            const addressSelect = document.getElementById('addressSelect');
+            if (addressSelect) {
+                // Trigger initial state
+                selectAddress(addressSelect.value);
+            }
+        });
+    </script>
+}

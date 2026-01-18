@@ -1,0 +1,455 @@
+﻿@model IEnumerable<Product>
+
+@{
+    ViewData["Title"] = "Quản lý sản phẩm";
+    ViewData["ActiveMenu"] = "products";
+    var categoryList = ViewData["CategoryList"] as IEnumerable<SelectListItem>
+          ?? new List<SelectListItem>();
+    var brandList = ViewData["BrandList"] as IEnumerable<SelectListItem>
+        ?? new List<SelectListItem>();
+
+
+ }
+
+<div class="container-fluid">
+    <div class="header mb-4">
+        <h1 class="header-title">
+            <i class="bi bi-box-seam me-2"></i>
+            @ViewData["Title"]
+        </h1>
+        <p class="text-muted mb-0">Quản lý danh sách sản phẩm trong hệ thống </p>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card dashboard-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title">Tổng sản phẩm</h5>
+                            <h2 class="card-value">@ViewBag.TotalProducts</h2>
+                        </div>
+                        <div class="card-icon primary">
+                            <i class="bi bi-box"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card dashboard-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title">Giá trị tồn kho</h5>
+                            <h2 class="card-value">@(((decimal)ViewBag.TotalValue).ToString("N0")) ₫</h2>
+                        </div>
+                        <div class="card-icon success">
+                            <i class="bi bi-cash-stack"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card dashboard-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title">Sắp hết hàng</h5>
+                            <h2 class="card-value">@ViewBag.LowStockCount</h2>
+                        </div>
+                        <div class="card-icon warning">
+                            <i class="bi bi-exclamation-triangle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card dashboard-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title">Hết hàng</h5>
+                            <h2 class="card-value">@ViewBag.OutOfStockCount</h2>
+                        </div>
+                        <div class="card-icon danger">
+                            <i class="bi bi-x-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i>
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white border-bottom">
+            <h5 class="card-title mb-0">
+                <i class="bi bi-search me-2"></i>
+                Tìm kiếm & Lọc sản phẩm
+            </h5>
+        </div>
+        <div class="card-body">
+            <form method="get" asp-action="Index" id="searchForm" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Tìm kiếm</label>
+                    <input type="text" class="form-control" name="searchString"
+                           value="@ViewBag.SearchString" placeholder="Tên hoặc mô tả sản phẩm...">
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Danh mục</label>
+                    <select class="form-control" name="categoryId">
+                        <option value="">-- Tất cả danh mục --</option>
+                                        @foreach (var category in categoryList)
+                                        {
+                                            <option value="@category.Value"
+                                                    selected="@(category.Value == ViewBag.CategoryId?.ToString())">
+                                                @category.Text
+                                            </option>
+                                        }
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Thương hiệu</label>
+                    <select class="form-control" name="brandId">
+                        <option value="">-- Tất cả thương hiệu --</option>
+                                        @foreach (var brand in brandList)
+                                        {
+                                            <option value="@brand.Value"
+                                                    selected="@(brand.Value == ViewBag.BrandId?.ToString())">
+                                                @brand.Text
+                                            </option>
+                                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Trạng thái</label>
+                    <select class="form-control" name="isPublished">
+                        <option value="">-- Tất cả trạng thái --</option>
+                        <option value="true" selected="@(ViewBag.IsPublished == true)">Công khai</option>
+                        <option value="false" selected="@(ViewBag.IsPublished == false)">Ẩn</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Giá từ</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" name="minPrice"
+                               value="@ViewBag.MinPrice" placeholder="0">
+                        <span class="input-group-text">₫</span>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Giá đến</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" name="maxPrice"
+                               value="@ViewBag.MaxPrice" placeholder="1000000">
+                        <span class="input-group-text">₫</span>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Sắp xếp</label>
+                    <div class="input-group">
+                        <select class="form-control" name="sortBy">
+                            <option value="name" selected="@(ViewBag.SortBy == "name")">Tên A-Z</option>
+                            <option value="price" selected="@(ViewBag.SortBy == "price")">Giá</option>
+                            <option value="stock" selected="@(ViewBag.SortBy == "stock")">Tồn kho</option>
+                            <option value="date" selected="@(ViewBag.SortBy == "date")">Ngày tạo</option>
+                        </select>
+                        <select class="form-control" name="sortOrder">
+                            <option value="asc" selected="@(ViewBag.SortOrder == "asc")">Tăng dần</option>
+                            <option value="desc" selected="@(ViewBag.SortOrder == "desc")">Giảm dần</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Tồn kho từ</label>
+                    <input type="number" class="form-control" name="minStock"
+                           value="@ViewBag.MinStock" placeholder="0">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Tồn kho đến</label>
+                    <input type="number" class="form-control" name="maxStock"
+                           value="@ViewBag.MaxStock" placeholder="1000">
+                </div>
+
+                <div class="col-12">
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search me-2"></i>
+                            Tìm kiếm
+                        </button>
+                        <button type="button" onclick="resetSearch()" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-clockwise me-2"></i>
+                            Đặt lại
+                        </button>
+                        <a asp-action="Create" class="btn btn-success ms-auto">
+                            <i class="bi bi-plus-circle me-2"></i>
+                            Thêm sản phẩm
+                        </a>
+                    </div>
+                </div>
+            </form>
+
+            @if (!string.IsNullOrEmpty(ViewBag.SearchString) ||
+            ViewBag.CategoryId != null ||
+            ViewBag.BrandId != null ||
+            ViewBag.IsPublished != null ||
+            ViewBag.MinPrice != null ||
+            ViewBag.MaxPrice != null)
+            {
+                <div class="mt-3">
+                    <small class="text-muted">
+                        <i class="bi bi-funnel me-1"></i>
+                        Đang lọc:
+                        @{
+                            var filters = new List<string>();
+                            if (!string.IsNullOrEmpty(ViewBag.SearchString))
+                                filters.Add($"Từ khóa: '{ViewBag.SearchString}'");
+
+                            if (ViewBag.CategoryId != null && ViewBag.CategoryId > 0)
+                                filters.Add($"Danh mục: {categoryList.FirstOrDefault(c => c.Value == ViewBag.CategoryId.ToString())?.Text}");
+
+                            if (ViewBag.BrandId != null && ViewBag.BrandId > 0)
+                                filters.Add($"Thương hiệu: {brandList.FirstOrDefault(b => b.Value == ViewBag.BrandId.ToString())?.Text}");
+
+                            if (ViewBag.IsPublished != null)
+                                filters.Add($"Trạng thái: {(ViewBag.IsPublished ? "Công khai" : "Ẩn")}");
+
+                            if (ViewBag.MinPrice != null || ViewBag.MaxPrice != null)
+                                filters.Add($"Giá: {ViewBag.MinPrice?.ToString("N0") ?? "0"} - {ViewBag.MaxPrice?.ToString("N0") ?? "∞"} ₫");
+
+                            if (ViewBag.MinStock != null || ViewBag.MaxStock != null)
+                                filters.Add($"Tồn kho: {ViewBag.MinStock ?? 0} - {ViewBag.MaxStock?.ToString() ?? "∞"}");
+                        }
+                        @string.Join(" | ", filters)
+                    </small>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">
+                <i class="bi bi-list-ul me-2"></i>
+                Danh sách sản phẩm (@Model.Count() sản phẩm)
+            </h5>
+            <div class="d-flex gap-2">
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button"
+                            data-bs-toggle="dropdown">
+                        <i class="bi bi-download me-1"></i> Export
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="exportToExcel()">Excel</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="printTable()">In báo cáo</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" id="productsTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="w-5">ID</th>
+                                <th class="w-25">Sản phẩm</th>
+                                <th class="w-15">Giá</th>
+                                <th class="w-10">Tồn kho</th>
+                                <th class="w-15">Danh mục & Thương hiệu</th>
+                                <th class="w-15">Trạng thái</th>
+                                <th class="w-15 text-center">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var product in Model)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">#@product.Id</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar me-3">
+                                                <div class="avatar-placeholder avatar-index bg-primary text-white rounded-circle d-flex align-items-center justify-content-center">
+                                                    @product.Name?.Substring(0, 1).ToUpper()
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0">@product.Name</h6>
+                                                <small class="text-muted truncate-text" style="max-width: 200px;">
+                                                    @(product.Description?.Length > 50 ? product.Description.Substring(0, 50) + "..." : product.Description)
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="fw-semibold">
+                                        <span class="text-success">@product.Price.ToString("N0") ₫</span>
+                                        @if (product.Cost > 0)
+                                        {
+                                            <div>
+                                                <small class="text-muted">Giá gốc: @product.Cost.ToString("N0") ₫</small>
+                                            </div>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (product.Stock > 0)
+                                        {
+                                            <span class="badge @(product.Stock <= 10 ? "bg-warning" : "bg-success")">
+                                                @product.Stock
+                                                @if (product.Stock <= 10)
+                                                {
+                                                    <i class="bi bi-exclamation-triangle ms-1"></i>
+                                                }
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">
+                                                <i class="bi bi-x-circle me-1"></i>
+                                                Hết hàng
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="d-flex flex-column gap-1">
+                                            <span class="badge bg-info">@product.Category?.Name</span>
+                                            <span class="badge bg-secondary">@product.Brand?.Name</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if (product.IsPublished)
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="bi bi-eye me-1"></i>
+                                                Công khai
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">
+                                                <i class="bi bi-eye-slash me-1"></i>
+                                                Ẩn
+                                            </span>
+                                        }
+                                        <div class="mt-1">
+                                            <small class="text-muted">@product.CreatedAt.ToString("dd/MM/yy")</small>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group" role="group">
+                                            <a asp-action="Details" asp-route-id="@product.Id"
+                                               class="btn btn-outline-secondary px-3"
+                                               title="Chi tiết">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@product.Id"
+                                               class="btn btn-outline-secondary px-3"
+                                               title="Chỉnh sửa">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <form asp-action="TogglePublish" asp-route-id="@product.Id"
+                                                  method="post" class="d-inline js-toggle-publish-form"
+                                                  data-action="@(product.IsPublished ? "unpublish" : "publish")"
+                                                  data-item-name="@product.Name">
+                                                @Html.AntiForgeryToken()
+                                                <button class="btn btn-outline-@(product.IsPublished ? "warning" : "success") px-3"
+                                                        type="submit" title="@(product.IsPublished ? "Ẩn sản phẩm" : "Công khai sản phẩm")">
+                                                    <i class="bi bi-eye@(product.IsPublished ? "-slash" : "")"></i>
+                                                </button>
+                                            </form>
+                                            @if (User.IsInRole("Admin"))
+                                            {
+                                            <form asp-action="Delete" asp-route-id="@product.Id"
+                                                  method="post" class="d-inline js-delete-form"
+                                                  data-item-name="@product.Name"
+                                                  data-item-type="sản phẩm">
+                                                @Html.AntiForgeryToken()
+                                                <button class="btn btn-outline-danger px-3"
+                                                        type="submit" title="Xóa sản phẩm">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                                }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <div class="mb-3">
+                        <i class="bi bi-search text-muted" style="font-size: 3rem;"></i>
+                    </div>
+                    @if (ViewBag.SearchString != null || ViewBag.CategoryId != null || ViewBag.BrandId != null)
+                    {
+                        <h5 class="text-muted">Không tìm thấy sản phẩm phù hợp</h5>
+                        <p class="text-muted mb-4">Thử lại với tiêu chí tìm kiếm khác</p>
+                        <button type="button" onclick="resetSearch()" class="btn btn-primary">
+                            <i class="bi bi-arrow-clockwise me-2"></i>
+                            Xóa bộ lọc
+                        </button>
+                    }
+                    else
+                    {
+                        <h5 class="text-muted">Chưa có sản phẩm nào</h5>
+                        <p class="text-muted mb-4">Bắt đầu bằng cách thêm sản phẩm mới</p>
+                        <a asp-action="Create" class="btn btn-primary">
+                            <i class="bi bi-plus-circle me-2"></i>
+                            Thêm sản phẩm đầu tiên
+                        </a>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="card-footer bg-white border-top">
+            <div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted">Hiển thị @Model.Count() sản phẩm</small>
+                @if (Model.Count() > 0)
+                {
+                    <small class="text-muted">
+                        Giá trung bình: @(((decimal)ViewBag.AveragePrice).ToString("N0")) ₫
+                    </small>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/admin/products/index.js"></script>
+
+}

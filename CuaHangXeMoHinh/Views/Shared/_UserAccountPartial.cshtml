@@ -1,0 +1,66 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+@if (!SignInManager.IsSignedIn(User))
+{
+    <div class="flex items-center gap-3">
+        <a class="text-white hover:text-primary font-medium tracking-wide text-sm transition-colors py-2 px-3" asp-controller="Account" asp-action="Login">
+            <i class="bi bi-box-arrow-in-right me-1"></i> ĐĂNG NHẬP
+        </a>
+        <a class="bg-white text-zinc-950 hover:bg-primary hover:text-white font-bold text-sm py-2 px-5 clip-path-slant transition-all duration-300" asp-controller="Account" asp-action="Register">
+            ĐĂNG KÝ
+        </a>
+    </div>
+}
+else
+{
+    <div class="relative group z-50">
+        <button class="flex items-center gap-2 text-white hover:text-primary transition-colors py-2 focus:outline-none">
+            <div class="w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center overflow-hidden">
+                <i class="bi bi-person-fill text-lg"></i>
+            </div>
+            <i class="bi bi-chevron-down text-xs text-zinc-500 group-hover:text-primary transition-colors"></i>
+        </button>
+        
+        <!-- Dropdown Menu -->
+        <div class="absolute right-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-y-0 translate-y-2">
+            <div class="bg-zinc-900 border border-zinc-800 shadow-xl w-48 overflow-hidden rounded-sm">
+                <div class="bg-zinc-950/50 p-3 border-b border-zinc-800">
+                    <p class="text-xs text-zinc-500 uppercase tracking-widest">Tài khoản</p>
+                    <p class="text-sm font-bold text-white truncate">@User.Identity?.Name</p>
+                </div>
+                
+                <ul class="py-1">
+                    <li>
+                        <a asp-controller="Account" asp-action="Profile" class="block px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-primary transition-colors">
+                            <i class="bi bi-person me-2"></i> Thông tin
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-controller="Order" asp-action="History" class="block px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-primary transition-colors">
+                            <i class="bi bi-box-seam me-2"></i> Đơn hàng
+                        </a>
+                    </li>
+                    @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
+                    {
+                        <li class="border-t border-zinc-800 my-1"></li>
+                        <li>
+                            <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="block px-4 py-2 text-sm text-amber-500 hover:bg-zinc-800 hover:text-amber-400 transition-colors">
+                                <i class="bi bi-speedometer2 me-2"></i> Quản trị
+                            </a>
+                        </li>
+                    }
+                    <li class="border-t border-zinc-800 my-1"></li>
+                    <li>
+                        <form asp-controller="Account" asp-action="Logout" method="post">
+                            <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-zinc-800 hover:text-red-400 transition-colors">
+                                <i class="bi bi-box-arrow-right me-2"></i> Đăng xuất
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,142 @@
+﻿@model Product
+
+@{
+    ViewData["Title"] = "Chi tiết sản phẩm";
+    ViewData["ActiveMenu"] = "products";
+}
+
+<div class="container-fluid">
+    <div class="header mb-4">
+        <h1 class="header-title">
+            <i class="bi bi-box-seam me-2"></i>
+            @ViewData["Title"]
+        </h1>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-lg-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="avatar-placeholder avatar-detail bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3">
+                        @Model.Name?.Substring(0, 1).ToUpper()
+                    </div>
+                    <h3 class="mb-2">@Model.Name</h3>
+                    <div class="mb-3">
+                        <span class="badge bg-info">@Model.Brand?.Name</span>
+                        <span class="badge bg-secondary">@Model.Category?.Name</span>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
+                            <i class="bi bi-pencil me-2"></i>
+                            Chỉnh sửa
+                        </a>
+                        <form asp-action="Delete" asp-route-id="@Model.Id"
+                              method="post" class="js-delete-form"
+                              data-item-name="@Model.Name"
+                              data-item-type="sản phẩm">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-outline-danger w-100">
+                                <i class="bi bi-trash me-2"></i>
+                                Xóa sản phẩm
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Thông tin chi tiết
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted small">ID sản phẩm</label>
+                            <p class="mb-0">#@Model.Id</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted small">Trạng thái</label>
+                            <div>
+                                @if (Model.IsPublished)
+                                {
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-eye me-1"></i>
+                                        Đang bán
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">
+                                        <i class="bi bi-eye-slash me-1"></i>
+                                        Ẩn
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted small">Giá bán</label>
+                            <p class="mb-0 fw-semibold text-success">@Model.Price.ToString("N0") ₫</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted small">Giá gốc</label>
+                            <p class="mb-0">@Model.Cost.ToString("N0") ₫</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted small">Tồn kho</label>
+                            <div>
+                                @if (Model.Stock > 0)
+                                {
+                                    <span class="badge bg-success">@Model.Stock sản phẩm</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Hết hàng</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted small">Lợi nhuận</label>
+                            <p class="mb-0 fw-semibold @((Model.Price - Model.Cost) > 0 ? "text-success" : "text-danger")">
+                                @((Model.Price - Model.Cost).ToString("N0")) ₫
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted small">Ngày tạo</label>
+                            <p class="mb-0">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted small">Cập nhật cuối</label>
+                            <p class="mb-0">@(Model.UpdatedAt?.ToString("dd/MM/yyyy HH:mm") ?? "Chưa cập nhật")</p>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label class="form-label text-muted small">Mô tả</label>
+                            @if (!string.IsNullOrEmpty(Model.Description))
+                            {
+                                <div class="p-3 bg-light rounded">
+                                    @Model.Description
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="text-muted mb-0">Không có mô tả</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <div class="mt-4">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>
+            Quay lại danh sách
+        </a>
+    </div>
+</div>

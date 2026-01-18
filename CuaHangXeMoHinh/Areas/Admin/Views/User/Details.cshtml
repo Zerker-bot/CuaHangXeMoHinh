@@ -1,0 +1,311 @@
+﻿@using CuaHangXeMoHinh.Areas.Admin.Models.ViewModels
+@using CuaHangXeMoHinh.Extensions
+@model User
+
+@{
+    ViewData["Title"] = "Chi tiết người dùng";
+    ViewData["ActiveMenu"] = "user-management";
+
+    var roles = ViewBag.Roles as List<string> ?? new List<string>();
+    var isLocked = ViewBag.IsLocked as bool? ?? false;
+}
+
+<div class="container-fluid">
+    <div class="header mb-4">
+        <h1 class="header-title">
+            <i class="bi bi-person-badge me-2"></i>
+            @ViewData["Title"]
+        </h1>     
+    </div>
+    <div class="row mb-4">
+        <div class="col-lg-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="avatar-placeholder avatar-detail bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3"
+                        >
+                        @Model.FullName?.Substring(0, 1).ToUpper()
+                    </div>
+                    <h3 class="mb-2">@Model.FullName</h3>
+                    <p class="text-muted mb-3">@@@Model.UserName</p>
+
+                    <div class="mb-3">
+                        @foreach (var role in roles)
+                        {
+                            var badgeClass = role switch
+                            {
+                                "Admin" => "bg-danger",
+                                "Manager" => "bg-warning",
+                                "Staff" => "bg-info",
+                                _ => "bg-secondary"
+                            };
+                            <span class="badge @badgeClass me-1 mb-1">@role</span>
+                        }
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <a asp-action="AssignRole" asp-route-id="@Model.Id"
+                           class="btn btn-primary">
+                            <i class="bi bi-shield-check me-2"></i>
+                            Phân quyền
+                        </a>
+                        <form asp-action="ToggleStatus" asp-route-id="@Model.Id"
+                              method="post"
+                              class="js-toggle-status-form"
+                              data-action-name="@(isLocked ? "Mở khóa" : "Khóa")">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn @(isLocked ? "btn-success" : "btn-warning") w-100">
+                                <i class="bi @(isLocked ? "bi-unlock" : "bi-lock") me-2"></i>
+                                @(isLocked ? "Mở khóa tài khoản" : "Khóa tài khoản")
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Thông tin tài khoản
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted small">Email</label>
+                            <div class="d-flex align-items-center">
+                                <p class="mb-0">@Model.Email</p>
+                                @if (Model.EmailConfirmed)
+                                {
+                                    <span class="badge bg-success ms-2">
+                                        <i class="bi bi-check-circle"></i> Đã xác thực
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning ms-2">
+                                        <i class="bi bi-exclamation-circle"></i> Chưa xác thực
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted small">Số điện thoại</label>
+                            <p class="mb-0">@(Model.PhoneNumber ?? "Chưa cập nhật")</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted small">Ngày sinh</label>
+                            <p class="mb-0">@(Model.DateOfBirth?.ToString("dd/MM/yyyy") ?? "Chưa cập nhật")</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted small">Trạng thái</label>
+                            <div>
+                                @if (isLocked)
+                                {
+                                    <span class="badge bg-danger">
+                                        <i class="bi bi-lock me-1"></i>
+                                        Đã khóa
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-unlock me-1"></i>
+                                        Hoạt động
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted small">Ngày đăng ký</label>
+                            <p class="mb-0">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted small">Lần đăng nhập cuối</label>
+                            <p class="mb-0">@(Model.LastLogin?.ToString("dd/MM/yyyy HH:mm") ?? "Chưa đăng nhập")</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card shadow-sm">
+        <div class="card-header bg-white border-bottom p-0">
+            <ul class="nav nav-tabs" id="userTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="addresses-tab" data-bs-toggle="tab"
+                            data-bs-target="#addresses" type="button" role="tab">
+                        <i class="bi bi-geo-alt me-2"></i>
+                        Địa chỉ
+                        <span class="badge bg-secondary ms-2">@Model.Addresses.Count</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="orders-tab" data-bs-toggle="tab"
+                            data-bs-target="#orders" type="button" role="tab">
+                        <i class="bi bi-cart-check me-2"></i>
+                        Đơn hàng
+                        <span class="badge bg-secondary ms-2">@Model.Orders.Count</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="reviews-tab" data-bs-toggle="tab"
+                            data-bs-target="#reviews" type="button" role="tab">
+                        <i class="bi bi-chat-dots me-2"></i>
+                        Đánh giá
+                        <span class="badge bg-secondary ms-2">@Model.Reviews.Count</span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <div class="tab-content" id="userTabsContent">
+                <div class="tab-pane fade show active" id="addresses" role="tabpanel">
+                    @if (Model.Addresses.Any())
+                    {
+                        <div class="row">
+                            @foreach (var address in Model.Addresses)
+                            {
+                                <div class="col-md-6 mb-3">
+                                    <div class="card border h-100 @(address.IsDefault ? "border-primary" : "")">
+                                        <div class="card-body">
+                                            @if (address.IsDefault)
+                                            {
+                                                <span class="badge bg-primary mb-2">Địa chỉ mặc định</span>
+                                            }
+                                            <h6 class="card-title">@address.Line1</h6>
+                                            @if (!string.IsNullOrEmpty(address.Line2))
+                                            {
+                                                <p class="text-muted small mb-1">@address.Line2</p>
+                                            }
+                                            <p class="text-muted small mb-0">
+                                                @address.City, @address.Province
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="address-state text-center py-5">
+                            <i class="bi bi-geo-alt text-muted"></i>
+                            <p class="text-muted mt-3">Người dùng chưa có địa chỉ nào</p>
+                        </div>
+                    }
+                </div>
+                <div class="tab-pane fade" id="orders" role="tabpanel">
+                    @if (Model.Orders.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Mã đơn</th>
+                                        <th>Ngày đặt</th>
+                                        <th>Sản phẩm</th>
+                                        <th>Tổng tiền</th>
+                                        <th>Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var order in Model.Orders.OrderByDescending(o => o.CreatedAt))
+                                    {
+                                        <tr style="cursor: pointer;"
+                                            onclick="window.location.href='@Url.Action("Details", "Order", new { area = "Admin", id = order.Id })'"
+                                            class="hover-row">
+                                            <td class="fw-semibold">#@order.Id</td>
+                                            <td>@order.CreatedAt.ToString("dd/MM/yyyy")</td>
+                                            <td>
+                                                <div>
+                                                    @foreach (var item in order.Items.Take(2))
+                                                    {
+                                                        <small class="d-block">@item.Product.Name (x@(item.Quantity))</small>
+                                                    }
+                                                    @if (order.Items.Count > 2)
+                                                    {
+                                                        <small class="text-muted">...và @(order.Items.Count - 2) sản phẩm khác</small>
+                                                    }
+                                                </div>
+                                            </td>
+                                            <td class="fw-semibold">@order.TotalAmount.ToString("N0") ₫</td>
+                                            <td class="align-middle " >
+  
+                                                    @{
+                                                        var badgeClass = order.Status.GetBadgeClass();
+                                                    }
+                                                <span class="badge @badgeClass">@order.Status.GetDisplayName()</span>
+        
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-cart text-muted" ></i>
+                            <p class="text-muted mt-3">Người dùng chưa có đơn hàng nào</p>
+                        </div>
+                    }
+                </div>
+                <div class="tab-pane fade" id="reviews" role="tabpanel">
+                    @if (Model.Reviews.Any())
+                    {
+                        <div class="row">
+                            @foreach (var review in Model.Reviews.OrderByDescending(r => r.CreatedAt))
+                            {
+                                <div class="col-md-6 mb-3">
+                                    <div class="card border h-100">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <h6 class="mb-0">@review.Product.Name</h6>
+                                                <div class="text-warning">
+                                                    @for (int i = 1; i <= 5; i++)
+                                                    {
+                                                        <i class="bi @(i <= review.Rating ? "bi-star-fill" : "bi-star")"></i>
+                                                    }
+                                                </div>
+                                            </div>
+                                            <p class="small mb-2">@review.Content</p>
+                                            <div class="d-flex justify-content-between">
+                                                <small class="text-muted">@review.CreatedAt.ToString("dd/MM/yyyy")</small>
+                                                @if (!string.IsNullOrEmpty(review.Response))
+                                                {
+                                                    <span class="badge bg-info">Đã phản hồi</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="review-state text-center py-5">
+                            <i class="bi bi-chat-dots text-muted" ></i>
+                            <p class="text-muted mt-3">Người dùng chưa có đánh giá nào</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>
+            Quay lại danh sách
+        </a>
+    </div>
+</div>
+
+@section Scripts {
+  
+}

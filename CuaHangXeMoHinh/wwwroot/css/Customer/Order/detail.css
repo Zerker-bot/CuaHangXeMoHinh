@@ -1,0 +1,94 @@
+﻿/* Timeline Styles */
+.timeline {
+    position: relative;
+    padding-left: 2rem; 
+}
+
+    .timeline:before {
+        content: '';
+        position: absolute;
+        left: 1rem;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background-color: var(--light-gray); 
+    }
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 2rem; 
+}
+
+    .timeline-item:last-child {
+        margin-bottom: 0;
+    }
+
+.timeline-icon {
+    position: absolute;
+    left: -2rem;
+    top: 0;
+    width: 2rem;
+    height: 2rem;
+    background-color: white;
+    border: 2px solid var(--light-gray);
+    border-radius: 50%;
+    align-items: center;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.timeline-item.active .timeline-icon {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+    .timeline-item.active .timeline-icon i {
+        color: white;
+    }
+
+.timeline-content {
+    padding-left: 1rem;
+}
+
+    .timeline-content h6 {
+        margin-bottom: 0.25rem;
+        font-weight: 600; 
+    }
+
+/* Order Item Image */
+.img-thumbnail {
+    border-radius: var(--border-radius);
+    border: 1px solid var(--light-gray);
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+}
+
+
+/* Badge */
+.badge {
+    font-weight: 500;
+    padding: 0.5em 1em;
+}
+
+@media (max-width: 768px) {
+    .d-flex.justify-content-between { /
+        flex-direction: column; 
+        align-items: flex-start;
+    }
+
+    .text-end { 
+        text-align: left !important;
+        margin-top: 1rem;
+    }
+
+    .card-header h5 { 
+        font-size: 1.1rem;
+    }
+}
+.img-thumbnail {
+    width: 80px; height: 80px; object-fit: cover;
+}
+

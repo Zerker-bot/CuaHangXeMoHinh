@@ -1,0 +1,31 @@
+# Visual Studio
+.vs/
+.vscode/
+bin/
+obj/
+[Oo]bj/
+[Bb]in/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# ASP.NET Core
+appsettings.Development.json
+appsettings.Local.json
+
+# Environment Variables
+.env
+
+# NodeJS / Frontend (if applicable)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# OS Generated Files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Logs
+*.log

@@ -1,0 +1,100 @@
+﻿@using CuaHangXeMoHinh.Models
+@model Product
+@Html.AntiForgeryToken()
+@{
+    // 1. Lấy ảnh
+    var image = Model.Images.FirstOrDefault(i => i.IsPrimary)?.Url
+                ?? Model.Images.FirstOrDefault()?.Url
+                ?? "https://placehold.co/400";
+
+    // 2. Tính % giảm giá
+    int discount = 0;
+    if (Model.Cost > Model.Price)
+    {
+        discount = (int)Math.Round(((Model.Cost - Model.Price) / Model.Cost) * 100);
+    }
+
+    // 3. Tính sao trung bình
+    double rating = Model.Reviews.Any() ? Model.Reviews.Average(r => r.Rating) : 0; 
+}
+
+<div class="group relative bg-zinc-900 border border-zinc-800 hover:border-primary/50 transition-all duration-300 overflow-hidden h-full flex flex-col">
+    <!-- Image Section -->
+    <div class="relative aspect-[4/3] overflow-hidden bg-zinc-950">
+        <img src="@image" alt="@Model.Name" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+        
+        <!-- Gradient Overlay -->
+        <div class="absolute inset-0 bg-gradient-to-t from-zinc-900 via-transparent to-transparent opacity-60"></div>
+        
+        <!-- Badges -->
+        <div class="absolute top-3 left-3 flex flex-col gap-2">
+            @if (discount > 0)
+            {
+                <span class="bg-primary text-white text-xs font-bold px-2 py-1 clip-path-slant shadow-lg shadow-primary/20">-@discount%</span>
+            }
+            @if (!Model.IsPublished)
+            {
+                <span class="bg-zinc-500 text-white text-xs font-bold px-2 py-1 clip-path-slant">Hết hàng</span>
+            }
+        </div>
+
+        <!-- Quick Action Overlay (Desktop) -->
+        <div class="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex gap-2 z-10">
+            <a asp-controller="Products" asp-action="Detail" asp-route-id="@Model.Id" class="flex-1 bg-white/10 hover:bg-white text-white hover:text-zinc-900 border border-white/20 backdrop-blur-sm font-bold text-xs py-2 uppercase tracking-wider text-center transition-colors">
+                Xem chi tiết
+            </a>
+            <button class="bg-primary hover:bg-red-600 text-white w-10 flex items-center justify-center transition-colors add-to-cart-btn"
+                    data-product-id="@Model.Id"
+                    data-product-name="@Model.Name" 
+                    data-id="@Model.Id">
+                <i class="bi bi-cart-plus"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Content Section -->
+    <div class="p-4 flex flex-col flex-grow">
+        <div class="text-xs text-zinc-500 uppercase tracking-widest mb-1">@Model.Category?.Name</div>
+        
+        <h3 class="font-display text-white text-lg font-bold mb-2 truncate group-hover:text-primary transition-colors">
+            <a asp-controller="Products" asp-action="Detail" asp-route-id="@Model.Id" class="focus:outline-none">
+                <span class="absolute inset-0 z-0"></span> <!-- Clickable card area hack -->
+                @Model.Name
+            </a>
+        </h3>
+
+        <!-- Rating -->
+        <div class="flex items-center gap-1 mb-3 text-sm">
+            @for (int i = 1; i <= 5; i++)
+            {
+                if (i <= rating)
+                {
+                    <i class="bi bi-star-fill text-yellow-500"></i>
+                }
+                else
+                {
+                    <i class="bi bi-star-fill text-zinc-700"></i>
+                }
+            }
+            <span class="text-zinc-500 text-xs ml-1">(@Model.Reviews.Count)</span>
+        </div>
+
+        <div class="mt-auto flex items-end justify-between border-t border-zinc-800 pt-3">
+            <div class="flex flex-col">
+                <span class="text-primary font-display text-xl font-bold tracking-wide">@Model.Price.ToString("N0") đ</span>
+                @if (discount > 0)
+                {
+                    <span class="text-zinc-500 text-xs line-through decoration-zinc-500">@Model.Cost.ToString("N0") đ</span>
+                }
+            </div>
+            
+            <!-- Mobile Cart Button (Visible only on mobile/touch where hover doesn't work well) -->
+            <button class="md:hidden w-8 h-8 rounded-full bg-zinc-800 text-primary flex items-center justify-center border border-zinc-700 z-20 add-to-cart-btn"
+                     data-product-id="@Model.Id"
+                     data-product-name="@Model.Name" 
+                     data-id="@Model.Id">
+                <i class="bi bi-cart-plus"></i>
+            </button>
+        </div>
+    </div>
+</div>

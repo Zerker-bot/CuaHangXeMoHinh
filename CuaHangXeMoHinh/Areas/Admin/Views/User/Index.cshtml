@@ -1,0 +1,182 @@
+﻿@using CuaHangXeMoHinh.Areas.Admin.Models.ViewModels
+@using CuaHangXeMoHinh.Extensions
+@model IEnumerable<UserViewModel>
+
+@{
+    ViewData["Title"] = "Quản lý người dùng";
+    ViewData["ActiveMenu"] = "user-management";
+}
+
+<div class="container-fluid">
+    <div class="header mb-4">
+        <h1 class="header-title">
+            <i class="bi bi-people me-2"></i>
+            @ViewData["Title"]
+        </h1>
+        <p class="text-muted mb-0">Quản lý tài khoản người dùng và phân quyền</p>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i>
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white border-bottom">
+            <h5 class="card-title mb-0">
+                <i class="bi bi-person-badge me-2"></i>
+                Danh sách người dùng
+            </h5>
+            <div class="card-tools">
+                <span class="badge bg-primary">@Model.Count() người dùng</span>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="w-5">#</th>
+                            <th class="w-20">Họ tên</th>
+                            <th class="w-20">Email</th>
+                            <th class="w-15">Số điện thoại</th>
+                            <th class="w-20">Vai trò</th>
+                            <th class="w-10">Trạng thái</th>
+                            <th class="w-10 text-center">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int counter = 1;
+                        }
+                        @foreach (var user in Model)
+                        {
+                            <tr>
+                                <td class="fw-semibold">@counter</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar me-3">
+                                            <div class="avatar-placeholder avatar-index bg-primary text-white rounded-circle d-flex align-items-center justify-content-center">
+                                                @user.FullName?.Substring(0, 1).ToUpper()
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0">@user.FullName</h6>
+                                            <small class="text-muted">@@@user.UserName</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    @user.Email
+                                    @if (user.EmailConfirmed)
+                                    {
+                                        <span class="badge bg-success ms-2" title="Đã xác thực">
+                                            <i class="bi bi-check-circle"></i>
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning ms-2" title="Chưa xác thực">
+                                            <i class="bi bi-exclamation-circle"></i>
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(user.PhoneNumber))
+                                    {
+                                        @user.PhoneNumber
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Chưa cập nhật</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-wrap gap-1">
+                                        @foreach (var role in user.Roles)
+                                        {
+                                            var badgeClass = role switch
+                                            {
+                                                "Admin" => "bg-danger",
+                                                "Manager" => "bg-warning",
+                                                "Staff" => "bg-info",
+                                                _ => "bg-secondary"
+                                            };
+                                            <span class="badge @badgeClass">@role</span>
+                                        }
+                                        @if (!user.Roles.Any())
+                                        {
+                                            <span class="badge bg-light text-dark">Không có vai trò</span>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    @if (user.IsLocked)
+                                    {
+                                        <span class="badge bg-danger">
+                                            <i class="bi bi-lock me-1"></i>
+                                            Đã khóa
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-unlock me-1"></i>
+                                            Hoạt động
+                                        </span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Details" asp-route-id="@user.Id"
+                                           class="btn btn-outline-secondary px-3"
+                                           title="Chi tiết">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a asp-action="AssignRole" asp-route-id="@user.Id"
+                                           class="btn btn-outline-secondary px-3"
+                                           title="Phân quyền">
+                                            <i class="bi bi-shield-check"></i>
+                                        </a>
+                                        <form asp-action="ToggleStatus" asp-route-id="@user.Id"
+                                              method="post" class="d-inline js-toggle-status-form"
+                                              data-action-name="@(user.IsLocked ? "Mở khóa" : "Khóa")">                                     
+                                            @Html.AntiForgeryToken()
+                                            <button class="btn btn-outline-secondary px-3"
+                                            type="submit" title="@(user.IsLocked ? "Mở khóa người dùng" : "Khóa người dùng")">
+
+                                                <i class="bi @(user.IsLocked ? "bi-unlock" : "bi-lock")"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            counter++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-white border-top">             
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+
+   
+}
+

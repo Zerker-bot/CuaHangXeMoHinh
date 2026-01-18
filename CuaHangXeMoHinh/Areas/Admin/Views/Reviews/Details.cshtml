@@ -1,0 +1,272 @@
+﻿@model Review
+
+@{
+    ViewData["Title"] = "Chi tiết Đánh giá";
+    ViewData["ActiveMenu"] = "reviews";
+}
+
+<div class="container-fluid">
+    <div class="header mb-4">
+        <h1 class="header-title">
+            <i class="bi bi-chat-dots me-2"></i>
+            @ViewData["Title"]
+        </h1>
+        <div class="d-flex align-items-center">
+            <span class="badge
+                @(Model.IsApproved ? "bg-success" :
+                  !string.IsNullOrEmpty(Model.Response) ? "bg-danger" : "bg-warning") me-2">
+                @(Model.IsApproved ? "Đã duyệt" :
+                    !string.IsNullOrEmpty(Model.Response) ? "Đã từ chối" : "Chờ duyệt")
+            </span>
+            <small class="text-muted">ID: #@Model.Id</small>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-chat-left-text me-2"></i>
+                        Nội dung đánh giá
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div>
+                            <div class="star-rating mb-2">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <i class="bi @(i <= Model.Rating ? "bi-star-fill text-warning" : "bi-star text-muted")" style="font-size: 1.5rem;"></i>
+                                }
+                                <span class="ms-2 fw-bold fs-5">@Model.Rating/5</span>
+                            </div>
+                            <p class="text-muted mb-0">
+                                <i class="bi bi-calendar me-1"></i>
+                                Đăng lúc: @Model.CreatedAt.ToString("HH:mm dd/MM/yyyy")
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="border rounded p-3 bg-light mb-4">
+                        <p class="mb-0">@(string.IsNullOrEmpty(Model.Content) ? "Không có nội dung" : Model.Content)</p>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Response))
+                    {
+                        <div class="border-start border-3 border-primary ps-3 mt-4">
+                            <h6 class="text-primary">
+                                <i class="bi bi-reply me-1"></i>
+                                Phản hồi của quản trị viên:
+                            </h6>
+                            <p class="mb-0">@Model.Response</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            @if (!Model.IsApproved && string.IsNullOrEmpty(Model.Response))
+            {
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white border-bottom">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-gear me-2"></i>
+                            Hành động
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="approveForm" asp-action="Approve" method="post" class="mb-3">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <div class="mb-3">
+                                <label for="approveResponse" class="form-label">
+                                    <i class="bi bi-reply me-1"></i>
+                                    Phản hồi (tùy chọn)
+                                </label>
+                                <textarea name="response"
+                                          id="approveResponse"
+                                          class="form-control"
+                                          rows="3"
+                                          placeholder="Nhập phản hồi cho đánh giá này..."></textarea>
+                            </div>
+                            <button type="button"
+                                    class="btn btn-success w-100 js-review-action"
+                                    data-form-id="approveForm"
+                                    data-action="duyệt">
+                                <i class="bi bi-check-lg me-2"></i>
+                                Duyệt đánh giá
+                            </button>
+                           
+                        </form>
+
+                        <form id="rejectForm" asp-action="Reject" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <div class="mb-3">
+                                <label for="rejectResponse" class="form-label">
+                                    <i class="bi bi-reply me-1"></i>
+                                    Lý do từ chối 
+                                </label>
+                                <textarea name="response"
+                                          id="rejectResponse"
+                                          class="form-control"
+                                          rows="3"
+                                          placeholder="Nhập lý do từ chối đánh giá này..."></textarea>
+                            </div>
+                            <button type="button"
+                                    class="btn btn-danger w-100 js-review-action"
+                                    data-form-id="rejectForm"
+                                    data-action="từ chối">
+                                <i class="bi bi-x-lg me-2"></i>
+                                Từ chối đánh giá
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-person me-2"></i>
+                        Thông tin người đánh giá
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.User != null)
+                    {
+                        <div class="text-center mb-3">
+                            <div class="avatar-placeholder avatar-detail bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3">
+                                @Model.User.FullName?[0]
+                            </div>
+                            <h5 class="mb-1">@Model.User.FullName</h5>
+                            <p class="text-muted mb-0">@Model.User.Email</p>
+                        </div>
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item d-flex justify-content-between">
+                                <span>Số điện thoại:</span>
+                                <span class="fw-medium">@(Model.User.PhoneNumber ?? "Chưa cập nhật")</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between">
+                                <span>Đã đăng ký:</span>
+                                <span class="fw-medium">@Model.User.CreatedAt.ToString("dd/MM/yyyy")</span>
+                            </div>
+                            @if (Model.User.LastLogin.HasValue)
+                            {
+                                <div class="list-group-item d-flex justify-content-between">
+                                    <span>Đăng nhập cuối:</span>
+                                    <span class="fw-medium">@Model.User.LastLogin.Value.ToString("dd/MM/yyyy")</span>
+                                </div>
+                            }
+                        </div>
+                        <div class="text-center mt-3">
+                            <a asp-area="Admin" asp-controller="User" asp-action="Details" asp-route-id="@Model.UserId"
+                               class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-eye me-1"></i>
+                                Xem chi tiết
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-3">
+                            <i class="bi bi-person-x text-muted" style="font-size: 2rem;"></i>
+                            <p class="text-muted mt-2">Người dùng không tồn tại hoặc đã bị xóa</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-box me-2"></i>
+                        Thông tin sản phẩm
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.Product != null)
+                    {
+                        <div class="text-center mb-3">
+                            <div class="avatar-placeholder avatar-detail bg-info text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3">
+                                <i class="bi bi-box"></i>
+                            </div>
+                            <h5 class="mb-1">@Model.Product.Name</h5>
+                            <p class="text-muted mb-2">ID: @Model.ProductId</p>
+                        </div>
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item d-flex justify-content-between">
+                                <span>Giá:</span>
+                                <span class="fw-medium text-success">@Model.Product.Price.ToString("N0") ₫</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between">
+                                <span>Tồn kho:</span>
+                                @if (Model.Product.Stock > 0)
+                                {
+                                    <span class="badge bg-success">@Model.Product.Stock</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Hết hàng</span>
+                                }
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between">
+                                <span>Trạng thái:</span>
+                                @if (Model.Product.IsPublished)
+                                {
+                                    <span class="badge bg-success">Đang bán</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Ẩn</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="text-center mt-3">
+                            <a asp-area="Admin" asp-controller="Products" asp-action="Details" asp-route-id="@Model.ProductId"
+                               class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-eye me-1"></i>
+                                Xem sản phẩm
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-3">
+                            <i class="bi bi-box text-muted" style="font-size: 2rem;"></i>
+                            <p class="text-muted mt-2">Sản phẩm không tồn tại hoặc đã bị xóa</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>
+            Quay lại danh sách
+        </a>
+        @if (!Model.IsApproved && string.IsNullOrEmpty(Model.Response))
+        {
+            <form asp-action="Delete" asp-route-id="@Model.Id"
+                  method="post" class="d-inline js-delete-form ms-2"
+                  data-item-name="đánh giá #@Model.Id"
+                  data-item-type="đánh giá">
+                @Html.AntiForgeryToken()
+                <button type="button" class="btn btn-outline-danger">
+                    <i class="bi bi-trash me-2"></i>
+                    Xóa đánh giá
+                </button>
+            </form>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+    
+    </script>
+}

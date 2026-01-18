@@ -1,0 +1,168 @@
+﻿@* Views/Cart/Index.cshtml *@
+@using Microsoft.AspNetCore.Antiforgery
+@model List<CuaHangXeMoHinh.ViewModels.CartItemViewModel>
+@inject IAntiforgery Antiforgery
+@{
+    ViewData["Title"] = "Giỏ Hàng";
+   
+    var token = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+}
+<input type="hidden" id="RequestVerificationToken" name="__RequestVerificationToken" value="@token">
+
+<div class="container mx-auto px-4 py-8">
+    <h1 class="font-display text-4xl text-white font-bold mb-8 flex items-center gap-4">
+        <i class="bi bi-bag-fill text-primary"></i> GIỎ HÀNG CỦA BẠN
+    </h1>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-20 bg-zinc-900 border border-zinc-800 rounded-lg">
+            <div class="w-24 h-24 bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="bi bi-cart-x text-6xl text-zinc-600"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-white mb-2 font-display">Giỏ hàng trống</h3>
+            <p class="text-zinc-500 mb-8">Hãy thêm những siêu phẩm vào gara của bạn!</p>
+            <a asp-controller="Products" asp-action="Index" class="btn-luxury inline-flex items-center gap-2">
+                <i class="bi bi-arrow-left"></i> Tiếp tục mua sắm
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Cart Items List -->
+            <div class="lg:col-span-2">
+                <div class="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden">
+                    <div class="p-6 border-b border-zinc-800 flex justify-between items-center bg-zinc-950/50">
+                        <h5 class="text-white font-bold">Sản phẩm (@ViewBag.CartItemCount)</h5>
+                        <button id="clear-cart-btn" class="text-red-500 hover:text-red-400 text-sm font-bold flex items-center gap-1 transition-colors">
+                            <i class="bi bi-trash"></i> Xóa tất cả
+                        </button>
+                    </div>
+
+                    <div class="divide-y divide-zinc-800">
+                        @foreach (var item in Model)
+                        {
+                            <div id="cart-item-@item.Product.Id" class="cart-item p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 hover:bg-zinc-800/30 transition-colors">
+                                <!-- Product Info -->
+                                <div class="flex-1 flex gap-4 w-full">
+                                    <div class="w-24 h-24 bg-zinc-950 border border-zinc-800 rounded overflow-hidden flex-shrink-0">
+                                        <img src="@(item.Product.Images?.FirstOrDefault()?.Url ?? "https://placehold.co/400")"
+                                             alt="@item.Product.Name"
+                                             class="w-full h-full object-cover">
+                                    </div>
+                                    <div>
+                                        <h6 class="text-white font-bold text-lg mb-1">@item.Product.Name</h6>
+                                        <div class="mb-2">
+                                            @if (item.Product.Stock > 0)
+                                            {
+                                                <span class="text-green-500 text-xs font-bold bg-green-500/10 px-2 py-1 rounded">Còn @item.Product.Stock mẫu</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-red-500 text-xs font-bold bg-red-500/10 px-2 py-1 rounded">Hết hàng</span>
+                                            }
+                                        </div>
+                                        <div class="text-primary font-bold sm:hidden">@item.Product.Price.ToString("N0") đ</div>
+                                    </div>
+                                </div>
+
+                                <!-- Actions & Price (Desktop) -->
+                                <div class="flex flex-row sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-4 sm:gap-2">
+                                    <div class="text-white font-bold hidden sm:block">@item.Product.Price.ToString("N0") đ</div>
+                                    
+                                    <div class="flex items-center bg-zinc-950 border border-zinc-700 rounded h-8">
+                                        <button class="w-8 h-full text-zinc-400 hover:text-white flex items-center justify-center quantity-decrease"
+                                                data-product-id="@item.Product.Id"
+                                                @(item.Quantity <= 1 ? "disabled" : "")>
+                                            <i class="bi bi-dash"></i>
+                                        </button>
+                                        <input type="number"
+                                               class="w-10 h-full bg-transparent text-center text-white text-sm outline-none quantity-update"
+                                               data-product-id="@item.Product.Id"
+                                               value="@item.Quantity"
+                                               min="1"
+                                               max="@item.Product.Stock"
+                                               data-old-value="@item.Quantity">
+                                        <button class="w-8 h-full text-zinc-400 hover:text-white flex items-center justify-center quantity-increase"
+                                                data-product-id="@item.Product.Id"
+                                                @(item.Quantity >= item.Product.Stock ? "disabled" : "")>
+                                            <i class="bi bi-plus"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="font-bold text-primary" id="item-total-@item.Product.Id">
+                                        @item.TotalPrice.ToString("N0") đ
+                                    </div>
+
+                                    <button class="text-zinc-500 hover:text-red-500 transition-colors remove-item-btn sm:absolute sm:top-6 sm:right-6"
+                                            data-product-id="@item.Product.Id"
+                                            title="Xóa">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Checkout Summary -->
+            <div class="lg:col-span-1">
+                <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-6 sticky top-24 checkout-card">
+                    <h5 class="font-display text-white font-bold text-xl mb-6 border-b border-zinc-800 pb-4">TỔNG THANH TOÁN</h5>
+
+                    <div class="space-y-3 mb-6">
+                        <div class="flex justify-between text-zinc-400">
+                            <span>Tạm tính:</span>
+                            <span class="text-white font-medium" id="cart-subtotal">@(ViewBag.CartTotal?.ToString("N0") ?? "0") đ</span>
+                        </div>
+                        <div class="flex justify-between text-zinc-400">
+                            <span>Phí vận chuyển:</span>
+                            <span class="text-white font-medium" id="shipping-fee">30.000 đ</span>
+                        </div>
+                        <div class="flex justify-between text-zinc-400">
+                            <span>Giảm giá:</span>
+                            <span class="text-green-500 font-medium">0 đ</span>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-zinc-800 pt-4 mb-8">
+                        <div class="flex justify-between items-end">
+                            <span class="text-white font-bold uppercase">Tổng cộng:</span>
+                            <strong id="cart-total" class="text-primary text-2xl font-bold font-display">
+                                @{
+                                    var subtotal = ViewBag.CartTotal ?? 0;
+                                    var total = subtotal + 30000;
+                                }
+                                @total.ToString("N0") đ
+                            </strong>
+                        </div>
+                    </div>
+
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <a href="@Url.Action("Checkout", "Cart")" class="btn-luxury w-full flex items-center justify-center gap-2 py-4 mb-4">
+                            <i class="bi bi-credit-card"></i> THANH TOÁN
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="/Cart/Index"
+                           class="btn-luxury w-full flex items-center justify-center gap-2 py-4 mb-4">
+                            <i class="bi bi-person-lock"></i> ĐĂNG NHẬP ĐỂ MUA
+                        </a>
+                    }
+
+                    <a asp-controller="Products" asp-action="Index" class="block text-center text-zinc-500 hover:text-white transition-colors text-sm uppercase tracking-wider">
+                        <i class="bi bi-arrow-left"></i> Tiếp tục mua sắm
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    
+}

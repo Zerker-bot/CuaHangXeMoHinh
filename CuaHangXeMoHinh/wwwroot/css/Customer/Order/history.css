@@ -1,0 +1,84 @@
+﻿
+.order-card {
+    transition: var(--transition);
+    border: 1px solid var(--light-gray);
+}
+
+.order-card:hover {
+    box-shadow: var(--box-shadow);
+    transform: translateY(-2px);
+}
+
+.order-status-badge {
+    font-size: 0.85rem;
+    padding: 0.4em 0.8em;
+}
+
+.order-actions {
+    min-width: 150px;
+}
+
+.order-image {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: var(--border-radius);
+}
+
+.order-id {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.order-total {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .btn-group {
+        flex-wrap: wrap;
+    }
+
+        .btn-group .btn {
+            margin-bottom: 5px;
+        }
+
+    .table td, .table th {
+        padding: 0.75rem 0.5rem;
+    }
+}
+.img-thumbnail {
+    width: 60px; height: 60px; object-fit: cover;
+}
+.bi-receipt-cutoff {
+    font-size: 4rem;
+    color: #ddd;
+}
+.btn-group .btn {
+    border-radius: 0 !important;
+    margin-left: -1px;
+}
+
+.btn-group > .btn:first-child,
+.btn-group > form:first-child .btn {
+    border-top-left-radius: var(--border-radius) !important;
+    border-bottom-left-radius: var(--border-radius) !important;
+    margin-left: 0;
+}
+
+.btn-group > .btn:last-child,
+.btn-group > form:last-child .btn {
+    border-top-right-radius: var(--border-radius) !important;
+    border-bottom-right-radius: var(--border-radius) !important;
+}
+
+.btn-group .btn:hover,
+.btn-group .btn:focus {
+    z-index: 1;
+}
+
+.btn-group .d-inline {
+    display: inline;
+}

@@ -1,0 +1,46 @@
+﻿
+@model IEnumerable<ProductImage> 
+@if (Model != null && Model.Any())
+{
+    <div class="row g-2" id="currentImages">
+        @foreach (var img in Model.OrderByDescending(i => i.IsPrimary))
+        {
+            <div class="col-md-3 col-sm-4 col-6" data-image-id="@img.Id">
+                <div class="card image-card @(img.IsPrimary ? "border-primary" : "")">
+                    <img src="@img.Url" class="card-img-top" alt="@img.AltText" style="height: 120px; object-fit: cover;">
+                    <div class="card-body p-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="@(img.IsPrimary ? "text-primary fw-bold" : "")">
+                                @if (img.IsPrimary)
+                                {
+                                    <span>Ảnh chính</span>
+                                }
+                            </small>
+                            <div class="btn-group btn-group-sm">
+                                <button type="button"
+                                        class="btn btn-outline-primary btn-set-primary @(img.IsPrimary ? "active" : "")"
+                                        data-image-id="@img.Id"
+                                        @(img.IsPrimary ? "disabled" : "")>
+                                    <i class="bi @(img.IsPrimary ? "bi-star-fill" : "bi-star")"></i>
+                                </button>
+                                <button type="button"
+                                        class="btn btn-outline-danger btn-delete-image"
+                                        data-image-id="@img.Id"
+                                        data-image-url="@img.Url">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="alert alert-warning">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        Sản phẩm chưa có ảnh. Vui lòng thêm ít nhất một ảnh.
+    </div>
+}
