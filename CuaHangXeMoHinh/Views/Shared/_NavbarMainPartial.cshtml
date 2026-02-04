@@ -3,9 +3,6 @@
     <div class="container mx-auto px-4 h-20 flex items-center justify-between">
         <!-- Logo -->
         <a class="flex items-center gap-2 group" asp-controller="Home" asp-action="Index">
-            <div class="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center border border-primary/50 group-hover:scale-110 transition-transform duration-300">
-                <i class="bi bi-speedometer2 text-white text-xl"></i>
-            </div>
             <span class="font-display text-2xl font-bold italic tracking-tighter text-white">4T<span class="text-primary group-hover:text-glow transition-all">Racing</span></span>
         </a>
 
@@ -18,11 +15,6 @@
         <div class="hidden md:flex items-center gap-8">
             <ul class="flex items-center gap-8">
                 <li>
-                    <a class="text-sm font-bold uppercase tracking-widest hover:text-primary transition-colors py-2 border-b-2 border-transparent hover:border-primary" asp-controller="Home" asp-action="Index">
-                        Showroom
-                    </a>
-                </li>
-                <li>
                     <a class="text-sm font-bold uppercase tracking-widest hover:text-primary transition-colors py-2 border-b-2 border-transparent hover:border-primary" asp-controller="Products" asp-action="Index">
                         Bộ sưu tập
                     </a>
@@ -33,7 +25,7 @@
             <form class="relative group" asp-controller="Products" asp-action="Index" method="get">
                 <input name="search" type="text" 
                        class="bg-zinc-900/50 border border-zinc-700 text-white rounded-full py-2 pl-4 pr-10 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary w-64 transition-all" 
-                       placeholder="Tìm kiếm siêu xe..." 
+                       placeholder="Tìm kiếm mô hình..." 
                        value="@(Context.Request.Query["search"])">
                 <button class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 group-hover:text-primary transition-colors" type="submit">
                     <i class="bi bi-search"></i>

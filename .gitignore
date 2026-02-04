@@ -5,7 +5,7 @@ bin/
 obj/
 [Oo]bj/
 [Bb]in/
-*.user
+*.user  
 *.suo
 *.userosscache
 *.sln.docstates

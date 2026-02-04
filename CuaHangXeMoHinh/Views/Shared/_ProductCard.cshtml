@@ -81,10 +81,10 @@
 
         <div class="mt-auto flex items-end justify-between border-t border-zinc-800 pt-3">
             <div class="flex flex-col">
-                <span class="text-primary font-display text-xl font-bold tracking-wide">@Model.Price.ToString("N0") đ</span>
+                <span class="text-primary font-display text-xl font-bold tracking-wide">@Model.Price.ToString("N0") VND</span>
                 @if (discount > 0)
                 {
-                    <span class="text-zinc-500 text-xs line-through decoration-zinc-500">@Model.Cost.ToString("N0") đ</span>
+                    <span class="text-zinc-500 text-xs line-through decoration-zinc-500">@Model.Cost.ToString("N0") VND</span>
                 }
             </div>
             

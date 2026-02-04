@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
-using System;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -8,7 +8,7 @@ using System;
 namespace CuaHangXeMoHinh.Migrations
 {
     /// <inheritdoc />
-    public partial class KhoiTao : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -387,13 +387,20 @@ namespace CuaHangXeMoHinh.Migrations
                 columns: new[] { "Id", "Description", "Name" },
                 values: new object[,]
                 {
-                    { 1, "Thương hiệu điện tử tiêu dùng toàn cầu", "Xiaomi" },
-                    { 2, "Giải pháp chiếu sáng thông minh", "Philips Hue" },
-                    { 3, "Thương hiệu điều hòa nổi tiếng", "Daikin" },
-                    { 4, "Hãng công nghệ đa quốc gia", "Samsung" },
-                    { 5, "Thiết bị mạng & nhà thông minh", "TP‑Link" },
-                    { 6, "Thiết bị âm thanh & giải trí cao cấp", "Sony" },
-                    { 7, "Điện tử tiêu dùng & thiết bị gia đình", "LG" }
+                    { 1, "Huyền thoại ngựa chồm từ Maranello, Ý.", "Ferrari" },
+                    { 2, "Biểu tượng bò tót hung dữ, thiết kế góc cạnh.", "Lamborghini" },
+                    { 3, "Sự chính xác và hoàn hảo từ cơ khí Đức.", "Porsche" },
+                    { 4, "Công nghệ đường đua F1 áp dụng cho siêu xe đường phố.", "McLaren" },
+                    { 5, "Đỉnh cao của tốc độ và sự xa xỉ tột bậc.", "Bugatti" },
+                    { 6, "Sức mạnh Mỹ với dòng Mustang huyền thoại.", "Ford" },
+                    { 7, "Hiệu suất cao kết hợp sự sang trọng tuyệt đối.", "Mercedes-AMG" },
+                    { 8, "Hiệu suất cao kết hợp sự sang trọng tuyệt đối.", "Rolls-Royce " },
+                    { 9, "Chevrolet.", "Chevrolet " },
+                    { 10, "Koenigsegg .", "Koenigsegg  " },
+                    { 11, "Pagani", "Pagani" },
+                    { 12, "Cadillac.", "Cadillac " },
+                    { 13, "Dodge .", "Dodge  " },
+                    { 14, "Aston Martin", "Aston Martin" }
                 });
 
             migrationBuilder.InsertData(
@@ -401,10 +408,10 @@ namespace CuaHangXeMoHinh.Migrations
                 columns: new[] { "Id", "Description", "Name" },
                 values: new object[,]
                 {
-                    { 1, "Thiết bị kiểm soát nhiệt độ và chất lượng không khí thông minh.", "Điều hòa, máy sưởi thông minh" },
-                    { 2, "Thiết bị an ninh và bảo mật nhà ở thông minh.", "Camera, khóa cửa thông minh" },
-                    { 3, "Thiết bị chiếu sáng và kiểm soát điện năng thông minh.", "Đèn LED, công tắc điều khiển" },
-                    { 4, "Thiết bị giải trí đa phương tiện thông minh.", "Loa, TV, hệ thống âm thanh" }
+                    { 1, "Siêu xe thể thao hiệu suất cao, thiết kế khí động học.", "Supercars" },
+                    { 2, "Những mẫu xe cổ điển mang vẻ đẹp vượt thời gian.", "Classic" },
+                    { 3, "Sức mạnh cơ bắp Mỹ thuần túy, động cơ V8 gầm rú.", "Muscle" },
+                    { 4, "Xe đua chuyên nghiệp từ các giải đấu danh giá.", "Racing (GT/F1)" }
                 });
 
             migrationBuilder.InsertData(
@@ -422,26 +429,11 @@ namespace CuaHangXeMoHinh.Migrations
                 columns: new[] { "Id", "BrandId", "CategoryId", "Cost", "CreatedAt", "Description", "IsPublished", "Name", "Price", "Stock", "UpdatedAt" },
                 values: new object[,]
                 {
-                    { 1, 1, 1, 8000000m, new DateTime(2025, 12, 9, 9, 54, 56, 834, DateTimeKind.Utc).AddTicks(7485), "Điều hòa thông minh – 1.5HP, WiFi, tiết kiệm điện", true, "Xiaomi Smart Air Conditioner 1.5HP", 12000000m, 50, null },
-                    { 2, 3, 1, 6000000m, new DateTime(2025, 12, 9, 9, 54, 56, 834, DateTimeKind.Utc).AddTicks(7490), "Máy sưởi thông minh Daikin, điều chỉnh nhiệt độ tự động", true, "Daikin Smart Heater Panel", 9000000m, 30, null },
-                    { 3, 7, 1, 5500000m, new DateTime(2025, 12, 9, 9, 54, 56, 834, DateTimeKind.Utc).AddTicks(7494), "Máy sưởi LG 2kW, tiết kiệm năng lượng, có hẹn giờ", true, "LG Smart Heater 2kW", 8000000m, 40, null },
-                    { 4, 4, 1, 10000000m, new DateTime(2025, 12, 9, 9, 54, 56, 834, DateTimeKind.Utc).AddTicks(7498), "Điều hòa Samsung WindFree – làm mát không gió lạnh trực tiếp", true, "Samsung WindFree Smart AC", 15000000m, 25, null },
-                    { 5, 1, 1, 4500000m, new DateTime(2025, 12, 9, 9, 54, 56, 834, DateTimeKind.Utc).AddTicks(7554), "Máy lọc không khí + điều hòa nhiệt độ thông minh", true, "Xiaomi Smart Air Purifier Pro", 7000000m, 60, null },
-                    { 6, 1, 2, 3000000m, new DateTime(2025, 12, 9, 9, 54, 56, 834, DateTimeKind.Utc).AddTicks(7558), "Khóa cửa vân tay & mã PIN, kết nối app", true, "Xiaomi Smart Door Lock Pro", 4500000m, 100, null },
-                    { 7, 5, 2, 800000m, new DateTime(2025, 12, 9, 9, 54, 56, 834, DateTimeKind.Utc).AddTicks(7562), "Camera IP quay 360°, phát hiện chuyển động", true, "TP‑Link Tapo C225 Security Camera", 1200000m, 150, null },
-                    { 8, 4, 2, 3200000m, new DateTime(2025, 12, 9, 9, 54, 56, 834, DateTimeKind.Utc).AddTicks(7565), "Khóa cửa thông minh Samsung, mở khóa từ xa", true, "Samsung Smart Door Lock", 5000000m, 80, null },
-                    { 9, 1, 2, 900000m, new DateTime(2025, 12, 9, 9, 54, 56, 834, DateTimeKind.Utc).AddTicks(7568), "Camera an ninh 2K, ghi hình ban đêm", true, "Xiaomi Security Camera 2K", 1500000m, 120, null },
-                    { 10, 5, 2, 150000m, new DateTime(2025, 12, 9, 9, 54, 56, 834, DateTimeKind.Utc).AddTicks(7572), "Cảm biến mở cửa thông minh, kết nối app", true, "TP‑Link Smart Door Sensor", 300000m, 200, null },
-                    { 11, 2, 3, 300000m, new DateTime(2025, 12, 9, 9, 54, 56, 834, DateTimeKind.Utc).AddTicks(7575), "Bóng đèn LED đổi màu, điều chỉnh sáng qua app", true, "Philips Hue White & Color LED Bulb", 500000m, 300, null },
-                    { 12, 5, 3, 250000m, new DateTime(2025, 12, 9, 9, 54, 56, 834, DateTimeKind.Utc).AddTicks(7580), "Công tắc thông minh điều khiển từ xa", true, "TP‑Link Smart Light Switch", 400000m, 250, null },
-                    { 13, 1, 3, 200000m, new DateTime(2025, 12, 9, 9, 54, 56, 834, DateTimeKind.Utc).AddTicks(7584), "Đèn LED dải thông minh, đổi màu, hẹn giờ", true, "Xiaomi Smart LED Strip 5m", 350000m, 200, null },
-                    { 14, 2, 3, 800000m, new DateTime(2025, 12, 9, 9, 54, 56, 834, DateTimeKind.Utc).AddTicks(7597), "Panel LED trần thông minh, điều chỉnh độ sáng", true, "Philips Hue LED Panel", 1200000m, 100, null },
-                    { 15, 5, 3, 100000m, new DateTime(2025, 12, 9, 9, 54, 56, 834, DateTimeKind.Utc).AddTicks(7611), "Ổ cắm thông minh, điều khiển từ xa", true, "TP‑Link Smart Plug Socket", 200000m, 400, null },
-                    { 16, 6, 4, 4000000m, new DateTime(2025, 12, 9, 9, 54, 56, 834, DateTimeKind.Utc).AddTicks(7614), "Soundbar đa kênh, kết nối Bluetooth & WiFi", true, "Sony Smart Soundbar 5.1", 6000000m, 60, null },
-                    { 17, 4, 4, 10000000m, new DateTime(2025, 12, 9, 9, 54, 56, 834, DateTimeKind.Utc).AddTicks(7618), "Smart TV 4K, ứng dụng Android, điều khiển từ xa", true, "Samsung 55\" Smart TV 4K", 15000000m, 40, null },
-                    { 18, 7, 4, 12000000m, new DateTime(2025, 12, 9, 9, 54, 56, 834, DateTimeKind.Utc).AddTicks(7621), "TV OLED, HDR, WebOS, kết nối Internet", true, "LG OLED Smart TV 48\"", 18000000m, 30, null },
-                    { 19, 1, 4, 800000m, new DateTime(2025, 12, 9, 9, 54, 56, 834, DateTimeKind.Utc).AddTicks(7625), "Loa thông minh, hỗ trợ điều khiển giọng nói", true, "Xiaomi Mi Smart Speaker", 1200000m, 200, null },
-                    { 20, 5, 4, 500000m, new DateTime(2025, 12, 9, 9, 54, 56, 834, DateTimeKind.Utc).AddTicks(7628), "TV Box Android, biến TV thường thành Smart TV", true, "TP‑Link Smart TV Box", 800000m, 150, null }
+                    { 1, 4, 1, 299000m, new DateTime(2026, 2, 4, 12, 20, 50, 582, DateTimeKind.Utc).AddTicks(2665), "Mô hình siêu xe Mclaren 720s\r\n\r\nTỉ Lệ: 1:32\r\n\r\nKích thước: Dài 15.5cm; rộng 5cm; cao 4cm\r\n\r\nChức năng: Có đèn, điện trước và sau khi mở cửa; mở được 2 cửa cánh gió; xe có trớn để chạy được.\r\n\r\nChất Liệu: Đối với xe ô tô toàn bộ khung xe được làm đúc bằng nhựa resin hoặc hợp kim nguyên khối, nội thất xe làm bằng nhựa ABS , lốp xe được làm từ cao su tự nhiên, các chi tiết ống xả được mạ crôm , lưới tản nhiệt bằng kim loại\r\n\r\nĐược sơn bằng tĩnh điện cho nước sơn sáng bóng, mỏng, bền. vì này là hàng cao cấp nên được sơn nhiều lớp theo tiêu chuẩn của nhà sản xuất.", true, "McLaren 720s", 189000m, 10, null },
+                    { 2, 10, 1, 289000m, new DateTime(2026, 2, 4, 12, 20, 50, 582, DateTimeKind.Utc).AddTicks(2669), "Thông tin sản phẩm Mô hình xe Koenigsegg Jesko tỉ lệ 1:32 kèm đế trưng bày\r\n\r\nTỉ lệ: 1:32 (nhỏ hơn xe thật 32 lần)\r\n\r\nMàu: Màu cam,trắng,đen\r\n\r\nKích thước: Dài x Rộng x Cao (15 x 6,5 x 4,5 cm)\r\n\r\nKhối lượng: ~300gr\r\n\r\nChất liệu: Toàn bộ phần thân vỏ được làm bằng kim loại nguyên khối với nước sơn tĩnh điện 3 lớp cực đẹp, Gầm xe và nội thất bằng nhựa, bánh xe bằng cao su cao cấp\r\n\r\nTính năng:\r\n\r\n️ Mở 2 cửa, capo và cốp\r\n\r\n️ Có đèn âm thanh và trớn\r\n\r\nMục đích sử dụng:\r\n\r\n️ Sưu tầm xe mô hình\r\n\r\n️ Trang trí, nội thất\r\n\r\n️ Quà tặng cho bạn nam, quà tặng cho bé trai, quà noel, quà sinh nhật", true, "Koenigsegg Jesko ", 189000m, 10, null },
+                    { 3, 12, 2, 299000m, new DateTime(2026, 2, 4, 12, 20, 50, 582, DateTimeKind.Utc).AddTicks(2671), "🏎️ Mô Hình Cadillac Eldorado Biarritz Classic 1:32 (Hợp Kim)\r\nChất liệu: Hợp kim Diecast siêu bền, lốp cao su, nội thất ABS.\r\n\r\nKích thước: ~15.5 x 7 x 4 cm.\r\n\r\nChức năng:\r\n\r\nMở toàn bộ cửa (cánh chim), nắp máy trước/sau.\r\n\r\nPhun khói: Có hệ thống phun sương giả lập khói từ ống xả (châm nước).\r\n\r\nĐèn & Âm thanh: Đèn LED trước/sau + tiếng động cơ gầm rú.\r\n\r\nVận hành: Có cót lùi (Pull-back) và giảm xóc 4 bánh.\r\n\r\nMục đích: Quà tặng, sưu tầm, decor bàn làm việc.", true, "Cadillac Eldorado Biarritz Classic  ", 199000m, 10, null },
+                    { 4, 13, 3, 299000m, new DateTime(2026, 2, 4, 12, 20, 50, 582, DateTimeKind.Utc).AddTicks(2674), "🏎️ Mô Hình Dodge Challenger SRT Hellcat Redeye V8 1:32 (Hợp Kim)\r\nChất liệu: Hợp kim Diecast siêu bền, lốp cao su, nội thất ABS.\r\n\r\nKích thước: ~15.5 x 7 x 4 cm.\r\n\r\nChức năng:\r\n\r\nMở toàn bộ cửa (cánh chim), nắp máy trước/sau.\r\n\r\nPhun khói: Có hệ thống phun sương giả lập khói từ ống xả (châm nước).\r\n\r\nĐèn & Âm thanh: Đèn LED trước/sau + tiếng động cơ gầm rú.\r\n\r\nVận hành: Có cót lùi (Pull-back) và giảm xóc 4 bánh.\r\n\r\nMục đích: Quà tặng, sưu tầm, decor bàn làm việc.", true, "Dodge Challenger SRT Hellcat Redeye V8 ", 199000m, 10, null },
+                    { 5, 14, 4, 299000m, new DateTime(2026, 2, 4, 12, 20, 50, 582, DateTimeKind.Utc).AddTicks(2676), "🏎️ Mô Hình  Aston Martin Redbull F1V8 1:42 (Hợp Kim)\r\nChất liệu: Hợp kim Diecast siêu bền, lốp cao su, nội thất ABS.\r\n\r\nKích thước: ~15.5 x 7 x 4 cm.\r\n\r\nChức năng:\r\n\r\nMở toàn bộ cửa (cánh chim), nắp máy trước/sau.\r\n\r\nPhun khói: Có hệ thống phun sương giả lập khói từ ống xả (châm nước).\r\n\r\nĐèn & Âm thanh: Đèn LED trước/sau + tiếng động cơ gầm rú.\r\n\r\nVận hành: Có cót lùi (Pull-back) và giảm xóc 4 bánh.\r\n\r\nMục đích: Quà tặng, sưu tầm, decor bàn làm việc.", true, " Aston Martin Redbull F1 ", 199000m, 10, null }
                 });
 
             migrationBuilder.InsertData(
@@ -449,26 +441,27 @@ namespace CuaHangXeMoHinh.Migrations
                 columns: new[] { "Id", "AltText", "IsPrimary", "ProductId", "Url" },
                 values: new object[,]
                 {
-                    { 1, null, true, 1, "/images/aircon1.jpg" },
-                    { 2, null, true, 2, "/images/heater1.jpg" },
-                    { 3, null, true, 3, "/images/heater2.jpg" },
-                    { 4, null, true, 4, "/images/aircon2.jpg" },
-                    { 5, null, true, 5, "/images/airpurifier.jpg" },
-                    { 6, null, true, 6, "/images/doorlock1.jpg" },
-                    { 7, null, true, 7, "/images/camera1.jpg" },
-                    { 8, null, true, 8, "/images/doorlock2.jpg" },
-                    { 9, null, true, 9, "/images/camera2.jpg" },
-                    { 10, null, true, 10, "/images/doorsensor.jpg" },
-                    { 11, null, true, 11, "/images/ledbulb1.jpg" },
-                    { 12, null, true, 12, "/images/switch1.jpg" },
-                    { 13, null, true, 13, "/images/ledstrip1.jpg" },
-                    { 14, null, true, 14, "/images/ledpanel1.jpg" },
-                    { 15, null, true, 15, "/images/plug1.jpg" },
-                    { 16, null, true, 16, "/images/soundbar1.jpg" },
-                    { 17, null, true, 17, "/images/tv_samsung55.jpg" },
-                    { 18, null, true, 18, "/images/tv_lg48.jpg" },
-                    { 19, null, true, 19, "/images/speaker1.jpg" },
-                    { 20, null, true, 20, "/images/tvbox1.jpg" }
+                    { 1, null, true, 1, "/images/MClaren_720s/main.png" },
+                    { 2, null, false, 1, "/images/MClaren_720s/1.png" },
+                    { 3, null, false, 1, "/images/MClaren_720s/2.png" },
+                    { 4, null, false, 1, "/images/MClaren_720s/3.png" },
+                    { 5, null, false, 1, "/images/MClaren_720s/4.png" },
+                    { 6, null, false, 1, "/images/MClaren_720s/5.png" },
+                    { 7, null, false, 1, "/images/MClaren_720s/6.png" },
+                    { 8, null, true, 2, "/images/Koenigsegg_Jesko/main.png" },
+                    { 9, null, false, 2, "/images/Koenigsegg_Jesko/1.png" },
+                    { 10, null, false, 2, "/images/Koenigsegg_Jesko/2.png" },
+                    { 11, null, false, 2, "/images/Koenigsegg_Jesko/3.png" },
+                    { 12, null, true, 3, "/images/Cadillac_Eldorado_Biarritz_Classic/main.png" },
+                    { 13, null, false, 3, "/images/Cadillac_Eldorado_Biarritz_Classic/1.png" },
+                    { 14, null, false, 3, "/images/Cadillac_Eldorado_Biarritz_Classic/2.png" },
+                    { 15, null, true, 4, "/images/Dodge_challenger/main.png" },
+                    { 16, null, false, 4, "/images/Dodge_challenger/1.png" },
+                    { 17, null, false, 4, "/images/Dodge_challenger/2.png" },
+                    { 18, null, true, 5, "/images/AstonMartin_rebullf1/main.png" },
+                    { 19, null, false, 5, "/images/AstonMartin_rebullf1/1.png" },
+                    { 20, null, false, 5, "/images/AstonMartin_rebullf1/2.png" },
+                    { 21, null, false, 5, "/images/AstonMartin_rebullf1/3.png" }
                 });
 
             migrationBuilder.CreateIndex(
